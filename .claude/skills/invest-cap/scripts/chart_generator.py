@@ -9,15 +9,29 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 from typing import List, Dict, Optional, Union
+import os
 
 
 class ChartGenerator:
     """Generate financial charts for investment research reports."""
 
     def __init__(self, output_dir: str = "generated_images"):
-        """Initialize chart generator with output directory."""
-        self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(exist_ok=True)
+        """
+        Initialize chart generator with output directory.
+
+        Args:
+            output_dir: Output directory path (relative to current working directory)
+        """
+        # Use absolute path based on current working directory to avoid
+        # accidentally creating files in the script's own directory
+        output_path = Path(output_dir)
+        if output_path.is_absolute():
+            self.output_dir = output_path
+        else:
+            # Resolve relative path from current working directory, not script location
+            self.output_dir = Path.cwd() / output_path
+
+        self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # Set matplotlib style for professional business charts
         plt.style.use('default')
