@@ -11,13 +11,10 @@
 
 - A working shell (macOS, Linux, or Windows WSL) with network access.
 
-
-
-*The generated report can be in various languages; for example, **it can be explicitly stated that the generated report will be in English**.*
-
 ## invest-report
 
 In current folder, provide historical trend data
-
 And, latest financial annual report.
+
+*The generated report can be in various languages; for example, **it can be explicitly stated that the generated report will be in English**.*
 
