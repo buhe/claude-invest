@@ -116,12 +116,27 @@ generator.capital_allocation_breakdown(years, dividends, repurchases)
 
 ### 图表 6：股数趋势
 ```python
+# 无股票分割的情况
 generator.share_count_trend(
     years=['2019', '2020', '2021', '2022', '2023', '2024'],  # 从数据中提取
     share_counts=[1000000000, 980000000, 960000000, ...],
     title="Share Count Trend"
 )
+
+# 有股票分割的情况（如 Apple 2021 年 4:1 分割）
+generator.share_count_trend(
+    years=['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+    share_counts=[5444000000, 5257000000, 5022000000, 4574000000, 4443000000, 16427000000, ...],
+    title="Apple Share Count Trend (2016-2025)",
+    split_year=2021,     # 股票分割发生的年份
+    split_ratio=4.0      # 分割比例（4:1）
+)
 ```
+
+**⚠️ 重要：股票分割处理**
+- 如果数据中包含股票分割前后数据，必须指定 `split_year` 和 `split_ratio` 参数
+- 图表会自动将分割前的股数调整为分割后基准，使趋势连续可读
+- 不指定这些参数会导致图表 Y 轴比例异常（高度过高）
 
 ### 图表 7：股息增长
 ```python
@@ -198,7 +213,7 @@ generator.capital_allocation_breakdown(
 使用 matplotlib 生成财务图表的 Python 模块。
 
 **可用方法：**
-- `share_count_trend(years, share_counts, title)` - 股数趋势折线图
+- `share_count_trend(years, share_counts, title, split_year=None, split_ratio=1.0)` - 股数趋势折线图，支持股票分割处理
 - `dividend_growth(years, dividends, title)` - 股息增长柱状图
 - `capital_allocation_breakdown(years, dividends, repurchases, title)` - 堆叠柱状图
 - `revenue_trend(years, revenues, title)` - 收入趋势折线图

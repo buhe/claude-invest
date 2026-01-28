@@ -8,7 +8,7 @@ All charts use English labels and titles, saved at 300 DPI to generated_images/ 
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union
 
 
 class ChartGenerator:
@@ -35,30 +35,62 @@ class ChartGenerator:
         self,
         years: List[str],
         share_counts: List[int],
-        title: str = "Share Count Trend"
+        title: str = "Share Count Trend",
+        split_year: Optional[int] = None,
+        split_ratio: float = 1.0
     ) -> str:
         """
         Chart 6: Share Count Trend (Line Chart)
 
+        Handles stock splits by normalizing data. If a stock split occurred,
+        all pre-split data is adjusted to post-split basis for consistent visualization.
+
         Args:
             years: List of years (e.g., ['2019', '2020', '2021', '2022', '2023', '2024'])
-            share_counts: List of share counts matching years
+            share_counts: List of share counts matching years (actual reported values)
             title: Chart title
+            split_year: Year when stock split occurred (e.g., 2021 for 4:1 split in 2021)
+            split_ratio: Split ratio (e.g., 4.0 for 4:1 split, 1.0 if no split)
 
         Returns:
             Path to saved chart image
         """
         fig, ax = plt.subplots(figsize=(12, 6))
 
-        # Convert shares to millions for display
-        shares_millions = [s / 1e6 for s in share_counts]
+        # Normalize for stock split - adjust pre-split shares to post-split basis
+        normalized_shares = []
+        split_occurred = split_year is not None and split_ratio > 1.0
+
+        for i, year in enumerate(years):
+            year_int = int(year)
+            if split_occurred and year_int < split_year:
+                # Adjust pre-split shares upward by split ratio
+                normalized_shares.append(share_counts[i] * split_ratio)
+            else:
+                normalized_shares.append(share_counts[i])
+
+        # Convert to millions for display
+        shares_millions = [s / 1e6 for s in normalized_shares]
 
         ax.plot(years, shares_millions, color='#E53935', linewidth=2.5, marker='o', markersize=6)
 
-        # Add data labels
+        # Add stock split annotation if applicable
+        if split_occurred:
+            split_idx = next((i for i, y in enumerate(years) if int(y) >= split_year), None)
+            if split_idx is not None and split_idx < len(years):
+                ax.axvline(x=split_idx - 0.5, color='gray', linestyle='--', alpha=0.5, linewidth=1)
+                ax.annotate(f'{int(split_ratio)}:1 Stock Split',
+                           xy=(split_idx - 0.5, max(shares_millions) * 0.9),
+                           xytext=(split_idx, max(shares_millions) * 0.95),
+                           fontsize=10, color='gray', ha='center',
+                           arrowprops=dict(arrowstyle='->', color='gray', lw=1))
+
+        # Add data labels (skip extreme values for cleaner display)
         for i, (year, value) in enumerate(zip(years, shares_millions)):
-            ax.text(i, value + 0.5, f'{value:.1f}M', ha='center', va='bottom',
-                   fontsize=10, color='#E53935', fontweight='bold')
+            if i == 0 or i == len(years) - 1 or len(shares_millions) <= 6:
+                ax.text(i, value + max(shares_millions) * 0.02,
+                       f'{value:.0f}M', ha='center', va='bottom',
+                       fontsize=9, color='#E53935', fontweight='bold')
 
         ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
         ax.set_xlabel('Fiscal Year', fontsize=12)
@@ -66,6 +98,11 @@ class ChartGenerator:
         ax.grid(True, alpha=0.3, linestyle='--', axis='y')
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
+
+        # Set reasonable y-axis limits to prevent extreme aspect ratios
+        y_min = min(shares_millions) * 0.95
+        y_max = max(shares_millions) * 1.05
+        ax.set_ylim(y_min, y_max)
 
         plt.tight_layout()
         output_path = self.output_dir / 'share_count_trend.png'
