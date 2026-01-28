@@ -1,59 +1,59 @@
 ---
 name: invest-value
-description: "Generate comprehensive company valuation research reports in markdown format from annual reports (PDF) and reference materials (markdown). Use when user needs to: (1) Analyze company valuation using DCF method, (2) Generate valuation reports with financial charts, (3) Research company intrinsic value based on free cash flow, (4) Create investment analysis reports with historical financial data and future projections"
+description: "从公司年报（PDF）和参考资料（markdown）生成全面的企业估值研究报告（markdown格式）。当用户需要以下功能时使用：(1) 使用DCF方法分析企业估值，(2) 生成带有财务图表的估值报告，(3) 基于自由现金流研究企业内在价值，(4) 创建包含历史财务数据和未来预测的投资分析报告"
 ---
 
-# Invest Value
+# 企业估值分析
 
-Generate comprehensive company valuation research reports in markdown format.
+从公司年报和参考资料生成全面的企业估值研究报告。
 
-## Prerequisites
+## 前置条件
 
-Before using this skill, ensure the current directory contains:
-- Company annual report (PDF format)
-- Reference materials (markdown format)
+使用此技能前，请确保当前目录包含：
+- 公司年报（PDF格式）
+- 参考资料（markdown格式）
 
-## Report Generation Workflow
+## 报告生成流程
 
-### Step 1: Gather Financial Data
+### 步骤1：收集财务数据
 
-1. **Extract from reference materials** - Read all markdown files in current directory for historical financial data
-2. **Cross-validate with stockanalysis skill** - Use `stockanalysis` skill to fetch last 5 years of financial data for validation
-3. **Resolve discrepancies** - If data conflicts between sources, document the discrepancy and note which source is more authoritative
+1. **从参考资料中提取** - 读取当前目录中所有 markdown 文件以获取历史财务数据
+2. **使用 stockanalysis 技能交叉验证** - 使用 `stockanalysis` 技能获取过去5年的财务数据进行验证
+3. **解决数据差异** - 如果数据来源之间存在冲突，记录差异并注明哪个来源更具权威性
 
-**Data required:**
-- Revenue
-- Net Income
-- Operating Cash Flow
-- Capital Expenditures (Capex)
-- Free Cash Flow (FCF = Operating Cash Flow - Capex)
-- Shares outstanding (for per-share calculations)
-- Current stock price
+**所需数据：**
+- 营业收入
+- 净利润
+- 经营活动现金流
+- 资本支出（Capex）
+- 自由现金流（FCF = 经营活动现金流 - 资本支出）
+- 流通股数（用于每股计算）
+- 当前股价
 
-### Step 2: Generate Charts (MANDATORY - Maximum 10 Charts)
+### 步骤2：生成图表（必填 - 最多10张图表）
 
-**CRITICAL REQUIREMENTS:**
-- Use Python matplotlib with REAL data - NO AI image generation tools
-- All chart labels, titles, and text MUST be in ENGLISH
-- Resolution: 300 DPI
-- Save to `generated_images/` subdirectory in current working directory
-- Maximum 10 charts per report
+**关键要求：**
+- 使用 Python matplotlib 与真实数据 - 禁止使用 AI 图像生成工具
+- 所有图表标签、标题和文本必须使用英文
+- 分辨率：300 DPI
+- 保存到当前工作目录的 `generated_images/` 子目录
+- 每份报告最多10张图表
 
-**Required Charts:**
+**必需图表：**
 
-1. **Revenue Trend** (`revenue_trend.png`) - Blue line (#1E88E5)
-2. **Net Income Trend** (`net_income_trend.png`) - Green line (#43A047)
-3. **Free Cash Flow Trend** (`fcf_trend.png`) - Purple line (#8E24AA)
+1. **营业收入趋势** (`revenue_trend.png`) - 蓝色线条 (#1E88E5)
+2. **净利润趋势** (`net_income_trend.png`) - 绿色线条 (#43A047)
+3. **自由现金流趋势** (`fcf_trend.png`) - 紫色线条 (#8E24AA)
 
-**Using the bundled script:**
+**使用捆绑脚本：**
 
-The skill includes `scripts/generate_charts.py` with functions:
+此技能包含 `scripts/generate_charts.py`，提供以下函数：
 - `create_revenue_trend_chart(years, revenue, output_dir)`
 - `create_net_income_trend_chart(years, net_income, output_dir)`
 - `create_fcf_trend_chart(years, fcf, output_dir)`
 - `generate_all_charts(financial_data, output_dir)`
 
-**Example:**
+**示例：**
 
 ```python
 import sys
@@ -69,45 +69,45 @@ financial_data = {
 generate_all_charts(financial_data, output_dir="generated_images")
 ```
 
-**IMPORTANT:** Extract years dynamically from actual data - DO NOT hardcode. Match years list length with data values length.
+**重要提示：** 从实际数据中动态提取年份 - 禁止硬编码。确保年份列表长度与数据值长度匹配。
 
-### Step 3: Write Valuation Report
+### 步骤3：编写估值报告
 
-Create a markdown file named `{COMPANY_NAME}_valuation_report.md` with the following structure:
+创建一个名为 `{COMPANY_NAME}_valuation_report.md` 的 markdown 文件，结构如下：
 
 ```markdown
 # {Company Name} 估值研究报告
 
 ## 1. 执行摘要
 
-[Company overview and key findings]
+[公司概况和主要发现]
 
 ## 2. 财务分析
 
 ### 2.1 历史财务数据
 
-![Revenue Trend](generated_images/revenue_trend.png)
+![营业收入趋势](generated_images/revenue_trend.png)
 
-![Net Income Trend](generated_images/net_income_trend.png)
+![净利润趋势](generated_images/net_income_trend.png)
 
-![Free Cash Flow Trend](generated_images/fcf_trend.png)
+![自由现金流趋势](generated_images/fcf_trend.png)
 
 ### 2.2 历史财务数据表格（最近10年）
 
-| Year | Revenue | Net Income | Operating Cash Flow | Capex | Free Cash Flow | Revenue Growth % | Net Income Growth % | FCF Growth % |
+| 年份 | 营业收入 | 净利润 | 经营活动现金流 | 资本支出 | 自由现金流 | 营业收入增长率 % | 净利润增长率 % | 自由现金流增长率 % |
 |------|---------|------------|---------------------|-------|----------------|------------------|---------------------|--------------|
-{data rows}
+{数据行}
 
 ### 2.3 未来10年自由现金流增长率估算
 
-Based on historical FCF growth rates:
-- [Last 10 years CAGR]
-- [Last 5 years CAGR]
-- [Last 3 years CAGR]
+基于历史自由现金流增长率：
+- [过去10年复合增长率]
+- [过去5年复合增长率]
+- [过去3年复合增长率]
 
-**Estimated FCF growth rate for next 10 years:** [X]%
+**估算未来10年自由现金流增长率：** [X]%
 
-**Rationale:** [Justify based on industry trends, company guidance, competitive position, etc.]
+**依据：** [基于行业趋势、公司指引、竞争地位等进行论证]
 
 ## 3. DCF 估值
 
@@ -127,76 +127,76 @@ Based on historical FCF growth rates:
 
 #### 情景 1：-5% 增长率
 
-- 假设：c = ${FCF per share}, g = -5%, r = 10%
+- 假设：c = ${每股自由现金流}, g = -5%, r = 10%
 - 计算：V = ${c} × (1 + (-0.05)) / (0.10 - (-0.05)) = ${value}
 - **内在价值：${value}/股**
 - 当前股价：${current_price}
 - 估值结论：[低估/高估] [X]%
 
 #### 情景 2：0% 增长率
-[Same format]
+[相同格式]
 
 #### 情景 3：5% 增长率
-[Same format]
+[相同格式]
 
 #### 情景 4：7% 增长率
-[Same format]
+[相同格式]
 
 #### 情景 5：9% 增长率
-[Same format]
+[相同格式]
 
 #### 情景 6：估算增长率 ([X]%)
-[Same format]
+[相同格式]
 
 ### 3.3 估值结论
 
-[Summary of valuation across scenarios and recommendation]
+[各情景估值总结和建议]
 
 ## 4. 附录
 
 ### 4.1 完整财务数据表格
 
-| Year | Revenue | Net Income | Operating Cash Flow | Capex | Free Cash Flow |
+| 年份 | 营业收入 | 净利润 | 经营活动现金流 | 资本支出 | 自由现金流 |
 |------|---------|------------|---------------------|-------|----------------|
-{full data table}
+{完整数据表格}
 
 ### 4.2 数据来源说明
 
-- 年报（PDF）：[Source details]
-- 参考资料：[Source details]
-- stockanalysis.com：[Cross-validation notes]
+- 年报（PDF）：[来源详情]
+- 参考资料：[来源详情]
+- stockanalysis.com：[交叉验证说明]
 
 ### 4.3 关键假设
 
-[Document all key assumptions made in the analysis]
+[记录分析中所做的所有关键假设]
 ```
 
-### Step 4: Data Verification
+### 步骤4：数据验证
 
-**Verification requirements:**
-1. Use `stockanalysis` skill to fetch last 5 years data
-2. Cross-validate with reference materials
-3. Evaluate source credibility (authoritativeness, rigor, relevance)
-4. Key claims require 2+ independent sources
-5. Document any discrepancies - DO NOT hide contradictions
+**验证要求：**
+1. 使用 `stockanalysis` 技能获取过去5年的数据
+2. 与参考资料进行交叉验证
+3. 评估来源可信度（权威性、严谨性、相关性）
+4. 关键陈述需要2个及以上独立来源
+5. 记录任何差异 - 禁止隐藏矛盾
 
-**Discount rate note:** Use 10% as the discount rate unless there's a specific reason to adjust.
+**贴现率说明：** 除非有特殊理由需要调整，否则使用10%作为贴现率。
 
-## Resources
+## 资源
 
 ### scripts/generate_charts.py
 
-Python matplotlib script for generating financial trend charts.
+用于生成财务趋势图的 Python matplotlib 脚本。
 
-**Functions:**
-- `generate_all_charts(financial_data, output_dir)` - Generate all three charts
-- `create_revenue_trend_chart(years, revenue, output_dir)` - Revenue trend only
-- `create_net_income_trend_chart(years, net_income, output_dir)` - Net income only
-- `create_fcf_trend_chart(years, fcf, output_dir)` - FCF trend only
+**函数：**
+- `generate_all_charts(financial_data, output_dir)` - 生成全部三张图表
+- `create_revenue_trend_chart(years, revenue, output_dir)` - 仅营业收入趋势
+- `create_net_income_trend_chart(years, net_income, output_dir)` - 仅净利润趋势
+- `create_fcf_trend_chart(years, fcf, output_dir)` - 仅自由现金流趋势
 
-**Chart specifications:**
-- Resolution: 300 DPI
-- Line charts: 12x6 inches (16:9 aspect ratio)
-- Professional business style
-- Data labels on all points
-- English labels only
+**图表规格：**
+- 分辨率：300 DPI
+- 折线图：12x6 英寸（16:9 宽高比）
+- 专业商务风格
+- 所有数据点显示标签
+- 仅使用英文标签
