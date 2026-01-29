@@ -1,99 +1,99 @@
 ---
 name: stockanalysis
-description: Fetch and extract company financial data from stockanalysis.com. Use when Claude needs to retrieve stock financial statements (income statement, balance sheet, cash flow), company overview, or key financial metrics like revenue, net income, operating cash flow, capital expenditures, and free cash flow for any publicly traded company by ticker symbol.
+description: 从 stockanalysis.com 获取公司财务数据。当 Claude 需要通过股票代码检索上市公司财务报表（利润表、资产负债表、现金流量表）、公司概览或关键财务指标（如收入、净利润、经营活动现金流、资本支出和自由现金流）时使用。
 ---
 
 # Stockanalysis
 
-## Overview
+## 概述
 
-Fetches company financial data from [stockanalysis.com](https://stockanalysis.com/) using agent-browser or curl. Retrieves financial statements and key metrics for any publicly traded company by ticker symbol.
+使用 agent-browser 或 curl 从 [stockanalysis.com](https://stockanalysis.com/) 获取公司财务数据。可通过股票代码检索任何上市公司的财务报表和关键指标。
 
-## URL Patterns
+## URL 模式
 
-| Data Type | URL Pattern | Example |
-|------------|-------------|---------|
-| Company Overview | `https://stockanalysis.com/stocks/{TICKER}/` | https://stockanalysis.com/stocks/aapl/ |
-| Income Statement | `https://stockanalysis.com/stocks/{TICKER}/financials/` | https://stockanalysis.com/stocks/aapl/financials/ |
-| Balance Sheet | `https://stockanalysis.com/stocks/{TICKER}/financials/balance-sheet/` | https://stockanalysis.com/stocks/aapl/financials/balance-sheet/ |
-| Cash Flow Statement | `https://stockanalysis.com/stocks/{TICKER}/financials/cash-flow-statement/` | https://stockanalysis.com/stocks/aapl/financials/cash-flow-statement/ |
+| 数据类型 | URL 模式 | 示例 |
+|----------|----------|------|
+| 公司概览 | `https://stockanalysis.com/stocks/{股票代码}/` | https://stockanalysis.com/stocks/aapl/ |
+| 利润表 | `https://stockanalysis.com/stocks/{股票代码}/financials/` | https://stockanalysis.com/stocks/aapl/financials/ |
+| 资产负债表 | `https://stockanalysis.com/stocks/{股票代码}/financials/balance-sheet/` | https://stockanalysis.com/stocks/aapl/financials/balance-sheet/ |
+| 现金流量表 | `https://stockanalysis.com/stocks/{股票代码}/financials/cash-flow-statement/` | https://stockanalysis.com/stocks/aapl/financials/cash-flow-statement/ |
 
-## Quick Start
+## 快速开始
 
-### Basic Company Data
+### 基本公司数据
 
 ```bash
-agent-browser open "https://stockanalysis.com/stocks/{TICKER}/"
+agent-browser open "https://stockanalysis.com/stocks/{股票代码}/"
 agent-browser snapshot
 ```
 
-### Financial Statements
+### 财务报表
 
 ```bash
-agent-browser open "https://stockanalysis.com/stocks/{TICKER}/financials/"
-agent-browser open "https://stockanalysis.com/stocks/{TICKER}/financials/cash-flow-statement/"
+agent-browser open "https://stockanalysis.com/stocks/{股票代码}/financials/"
+agent-browser open "https://stockanalysis.com/stocks/{股票代码}/financials/cash-flow-statement/"
 ```
 
-## Data Extraction
+## 数据提取
 
-### Key Financial Metrics
+### 关键财务指标
 
-| Metric | Location | Description |
-|---------|-----------|-------------|
-| Revenue | Income Statement | Total revenue from operations |
-| Net Income | Income Statement | Profit after all expenses and taxes |
-| Operating Cash Flow | Cash Flow Statement | Cash generated from core business operations |
-| Capital Expenditures (CapEx) | Cash Flow Statement | Cash spent on fixed assets and equipment |
-| Free Cash Flow (FCF) | Cash Flow Statement | Operating Cash Flow - CapEx |
-| Total Assets | Balance Sheet | All assets owned by the company |
-| Total Liabilities | Balance Sheet | All debts and obligations |
+| 指标 | 位置 | 描述 |
+|------|------|------|
+| 营业收入 | 利润表 | 运营产生的总收入 |
+| 净利润 | 利润表 | 扣除所有费用和税费后的利润 |
+| 经营活动现金流 | 现金流量表 | 核心业务活动产生的现金 |
+| 资本支出 (CapEx) | 现金流量表 | 用于固定资产和设备的现金支出 |
+| 自由现金流 (FCF) | 现金流量表 | 经营活动现金流 - 资本支出 |
+| 总资产 | 资产负债表 | 公司拥有的所有资产 |
+| 总负债 | 资产负债表 | 所有债务和义务 |
 
-### Free Cash Flow Calculation
+### 自由现金流计算
 
 ```
-FCF = Operating Cash Flow - Capital Expenditures
+自由现金流 = 经营活动现金流 - 资本支出
 ```
 
-## Workflow
+## 工作流程
 
-1. **Construct URL** using ticker symbol: `https://stockanalysis.com/stocks/{TICKER}/financials/`
+1. **构建 URL**：使用股票代码 `https://stockanalysis.com/stocks/{股票代码}/financials/`
 
-2. **Open page** with agent-browser:
+2. **打开页面**：使用 agent-browser
    ```bash
-   agent-browser open "https://stockanalysis.com/stocks/{TICKER}/financials/"
+   agent-browser open "https://stockanalysis.com/stocks/{股票代码}/financials/"
    ```
 
-3. **Take snapshot** to capture page content:
+3. **截取快照**：捕获页面内容
    ```bash
    agent-browser snapshot
    ```
 
-4. **Extract data** from snapshot, focusing on:
-   - Table headers (years/quarters)
-   - Metric rows (revenue, net income, operating cash flow, capital expenditures, free cash flow)
+4. **提取数据**：从快照中提取，重点关注：
+   - 表格标题（年份/季度）
+   - 指标行（营业收入、净利润、经营活动现金流、资本支出、自由现金流）
 
-5. **Format output** in clear table structure
+5. **格式化输出**：以清晰的表格结构呈现
 
-## Data Periods
+## 数据周期
 
-StockAnalysis provides data in multiple formats:
-- **Annual**: Fiscal year data (default)
-- **Quarterly**: Quarterly reports
-- **TTM**: Trailing Twelve Months
+StockAnalysis 提供多种数据格式：
+- **年度**：财政年度数据（默认）
+- **季度**：季度报告
+- **TTM**：过去十二个月
 
-Switch between periods using navigation buttons on the page.
+使用页面上的导航按钮切换不同周期。
 
-## Common Ticker Examples
+## 常见股票代码示例
 
-| Company | Ticker |
-|----------|---------|
-| Apple | AAPL |
-| Microsoft | MSFT |
-| Google/Alphabet | GOOGL |
-| Amazon | AMZN |
-| Tesla | TSLA |
-| NVIDIA | NVDA |
+| 公司 | 股票代码 |
+|------|----------|
+| 苹果 | AAPL |
+| 微软 | MSFT |
+| 谷歌/字母表 | GOOGL |
+| 亚马逊 | AMZN |
+| 特斯拉 | TSLA |
+| 英伟达 | NVDA |
 | Meta | META |
-| Berkshire Hathaway | BRK.B |
-| Johnson & Johnson | JNJ |
-| JPMorgan Chase | JPM |
+| 伯克希尔·哈撒韦 | BRK.B |
+| 强生 | JNJ |
+| 摩根大通 | JPM |
