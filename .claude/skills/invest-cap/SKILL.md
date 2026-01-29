@@ -84,7 +84,10 @@ description: 在包含公司年报（PDF）和参考资料（markdown）的当�
 ```python
 from scripts.chart_generator import ChartGenerator
 
-generator = ChartGenerator()
+# 重要：明确指定输出目录为当前工作目录下的 generated_images
+import os
+output_dir = os.path.join(os.getcwd(), "generated_images")
+generator = ChartGenerator(output_dir=output_dir)
 
 # 图表 6：股数趋势
 generator.share_count_trend(years, share_counts)
@@ -96,12 +99,18 @@ generator.dividend_growth(years, dividends)
 generator.capital_allocation_breakdown(years, dividends, repurchases)
 ```
 
+**⚠️ 路径重要说明**：
+- **必须**明确使用 `os.getcwd()` 获取当前工作目录
+- 图片必须保存在**当前工作目录**的 `generated_images/` 下
+- 不要在 skill 目录或任何其他位置生成图片
+- 在 markdown 报告中引用图片时使用相对路径：`![描述](generated_images/图片名.png)`
+
 **图表要求：**
 - 每份报告最多 10 个图表
 - 分辨率：300 DPI
 - 所有标签和标题必须使用**英文**
 - 从数据中动态提取年份（不要硬编码）
-- 保存到 `generated_images/` 目录
+- 保存到**当前工作目录**的 `generated_images/` 目录
 
 ### 步骤 5：撰写报告
 
