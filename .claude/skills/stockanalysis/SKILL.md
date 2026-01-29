@@ -75,10 +75,6 @@ agent-browser open "https://stockanalysis.com/stocks/{股票代码}/financials/c
 
 5. **格式化输出**：以清晰的表格结构呈现
 
-6. **写入数据**：将提取的最近5年的利润表、资产负债表、现金流量表、最近1年的分红数据以表格的形式更新当前文件夹的 references.md 文件中。
-
-7. **写入数据2**：将最近 5 年的自由现金流、营收、净利润、资本开支数据以表格的形式更新当前文件夹的 references.md 文件中。
-
 ## 数据周期
 
 StockAnalysis 提供多种数据格式：
