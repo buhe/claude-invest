@@ -36,6 +36,7 @@ def fetch_10k_filings(cik, years=5, output_dir=None):
     data = response.json()
 
     # 获取公司名称用于文件夹命名
+    company_name_clean = "Company"  # 默认值
     company_name = data.get('filings', {}).get('recent', {}).get('companyName', [None])[0]
     if company_name:
         # 清理公司名称用于文件夹
