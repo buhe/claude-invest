@@ -7,9 +7,12 @@
 """
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import json
 import os
 import pandas as pd
+import time
 from datetime import datetime
 
 headers = {
@@ -17,7 +20,33 @@ headers = {
 }
 
 
-def fetch_10k_filings(cik, years=5, output_dir=None):
+def create_session_with_retry(retries=3, backoff_factor=1, timeout=30):
+    """
+    创建带有重试机制的 requests Session
+
+    参数:
+        retries: 最大重试次数
+        backoff_factor: 重试间隔因子 (秒)
+        timeout: 请求超时时间 (秒)
+    """
+    session = requests.Session()
+
+    # 配置重试策略
+    retry_strategy = Retry(
+        total=retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["HEAD", "GET", "OPTIONS"]
+    )
+
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+
+    return session
+
+
+def fetch_10k_filings(cik, years=5, output_dir=None, delay=2):
     """
     下载公司最近N年的10-K文件
 
@@ -25,10 +54,14 @@ def fetch_10k_filings(cik, years=5, output_dir=None):
         cik: SEC CIK (10位，带前导零)
         years: 下载最近几年的10-K (默认5年)
         output_dir: 输出目录 (默认为 {公司名}_10K_Files)
+        delay: 每个文件下载之间的延迟秒数 (默认2秒)
     """
+    # 创建带重试的 session
+    session = create_session_with_retry(retries=3, backoff_factor=1, timeout=60)
+
     # 获取公司所有filing数据
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
-    response = requests.get(url, headers=headers)
+    response = session.get(url, headers=headers, timeout=60)
     if response.status_code != 200:
         print("请求失败！请检查CIK是否正确或User-Agent是否设置。")
         return False
@@ -79,13 +112,24 @@ def fetch_10k_filings(cik, years=5, output_dir=None):
 
         print(f"下载 {report_date} 财年 10-K ({row['filingDate'].date()})：{doc_url}")
 
-        doc_resp = requests.get(doc_url, headers=headers)
-        if doc_resp.status_code == 200:
-            with open(filepath, "wb") as f:
-                f.write(doc_resp.content)
-            print(f"   保存成功：{filepath}\n")
-        else:
-            print(f"   下载失败 (状态码: {doc_resp.status_code})\n")
+        try:
+            doc_resp = session.get(doc_url, headers=headers, timeout=60)
+            if doc_resp.status_code == 200:
+                with open(filepath, "wb") as f:
+                    f.write(doc_resp.content)
+                print(f"   保存成功：{filepath}\n")
+            else:
+                print(f"   下载失败 (状态码: {doc_resp.status_code})\n")
+        except requests.exceptions.SSLError as e:
+            print(f"   SSL 错误: {e}")
+            print(f"   跳过此文件，继续下一个...\n")
+        except requests.exceptions.RequestException as e:
+            print(f"   请求错误: {e}")
+            print(f"   跳过此文件，继续下一个...\n")
+
+        # 延迟，避免请求过快
+        if idx < len(tenk_df) - 1:
+            time.sleep(delay)
 
     print(f"所有下载完成！文件保存在 {output_dir} 文件夹。")
     return True
