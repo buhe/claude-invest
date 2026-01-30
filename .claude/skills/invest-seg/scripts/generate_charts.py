@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import os
 from pathlib import Path
+from . import CHART_BUSINESS_SEGMENTS, CHART_GEOGRAPHIC_SEGMENTS, CHART_COST_STRUCTURE
 
 # Set style for professional business presentation
 plt.style.use('seaborn-v0_8-whitegrid')
@@ -69,7 +70,7 @@ def create_business_segments_pie(segments, percentages, year):
     plt.tight_layout()
 
     output_dir = ensure_output_dir()
-    filepath = output_dir / 'business_segments.png'
+    filepath = output_dir / CHART_BUSINESS_SEGMENTS
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close()
 
@@ -117,7 +118,7 @@ def create_geographic_segments_pie(regions, percentages, year):
     plt.tight_layout()
 
     output_dir = ensure_output_dir()
-    filepath = output_dir / 'geographic_segments.png'
+    filepath = output_dir / CHART_GEOGRAPHIC_SEGMENTS
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close()
 
@@ -165,7 +166,7 @@ def create_cost_structure_pie(cost_categories, percentages, year):
     plt.tight_layout()
 
     output_dir = ensure_output_dir()
-    filepath = output_dir / 'cost_structure.png'
+    filepath = output_dir / CHART_COST_STRUCTURE
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close()
 

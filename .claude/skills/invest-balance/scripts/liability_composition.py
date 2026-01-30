@@ -6,6 +6,7 @@ Creates a pie chart showing various liability types composition
 
 import matplotlib.pyplot as plt
 import os
+from . import CHART_LIABILITY_COMPOSITION
 
 
 def generate_liability_composition_chart(liability_data, year, output_dir='generated_images'):
@@ -46,10 +47,10 @@ def generate_liability_composition_chart(liability_data, year, output_dir='gener
 
     ax.set_title(f'Liability Composition ({year})', fontsize=14, fontweight='bold', pad=20)
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/liability_composition.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'{output_dir}/{CHART_LIABILITY_COMPOSITION}', dpi=300, bbox_inches='tight')
     plt.close()
 
-    print(f"✅ Chart saved: {output_dir}/liability_composition.png")
+    print(f"✅ Chart saved: {output_dir}/{CHART_LIABILITY_COMPOSITION}")
 
 
 if __name__ == '__main__':

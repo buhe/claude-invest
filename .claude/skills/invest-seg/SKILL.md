@@ -89,7 +89,17 @@ create_debt_equity_bar(years, debt, equity, 'Company Name')
 **插入图表到报告**：
 ```markdown
 ![业务板块收入构成](generated_images/business_segments.png)
+![地理区域收入构成](generated_images/geographic_segments.png)
+![成本构成](generated_images/cost_structure.png)
 ```
+
+**重要：图片文件名规范**
+所有图片文件名由 `scripts/__init__.py` 中的常量定义，确保一致性：
+- `business_segments.png` - 业务板块饼图
+- `geographic_segments.png` - 地理区域饼图
+- `cost_structure.png` - 成本结构饼图
+
+**不要使用 `_pie` 后缀**，直接使用上述文件名。
 
 ### 5. 代码执行
 

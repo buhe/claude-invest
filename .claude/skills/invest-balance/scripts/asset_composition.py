@@ -6,6 +6,7 @@ Creates a pie chart showing various asset types composition
 
 import matplotlib.pyplot as plt
 import os
+from . import CHART_ASSET_COMPOSITION
 
 
 def generate_asset_composition_chart(asset_data, year, output_dir='generated_images'):
@@ -46,10 +47,10 @@ def generate_asset_composition_chart(asset_data, year, output_dir='generated_ima
 
     ax.set_title(f'Asset Composition ({year})', fontsize=14, fontweight='bold', pad=20)
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/asset_composition.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'{output_dir}/{CHART_ASSET_COMPOSITION}', dpi=300, bbox_inches='tight')
     plt.close()
 
-    print(f"✅ Chart saved: {output_dir}/asset_composition.png")
+    print(f"✅ Chart saved: {output_dir}/{CHART_ASSET_COMPOSITION}")
 
 
 if __name__ == '__main__':

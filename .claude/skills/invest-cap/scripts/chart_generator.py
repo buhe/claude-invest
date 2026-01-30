@@ -10,6 +10,7 @@ import numpy as np
 from pathlib import Path
 from typing import List, Dict, Optional, Union
 import os
+from . import CHART_DIVIDEND_GROWTH, CHART_SHARE_COUNT_TREND, CHART_CAPITAL_ALLOCATION_BREAKDOWN
 
 
 class ChartGenerator:
@@ -119,7 +120,7 @@ class ChartGenerator:
         ax.set_ylim(y_min, y_max)
 
         plt.tight_layout()
-        output_path = self.output_dir / 'share_count_trend.png'
+        output_path = self.output_dir / CHART_SHARE_COUNT_TREND
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
         plt.close()
         return str(output_path)
@@ -156,7 +157,7 @@ class ChartGenerator:
         ax.spines['right'].set_visible(False)
 
         plt.tight_layout()
-        output_path = self.output_dir / 'dividend_growth.png'
+        output_path = self.output_dir / CHART_DIVIDEND_GROWTH
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
         plt.close()
         return str(output_path)
@@ -209,7 +210,7 @@ class ChartGenerator:
         ax.spines['right'].set_visible(False)
 
         plt.tight_layout()
-        output_path = self.output_dir / 'capital_allocation.png'
+        output_path = self.output_dir / CHART_CAPITAL_ALLOCATION_BREAKDOWN
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
         plt.close()
         return str(output_path)

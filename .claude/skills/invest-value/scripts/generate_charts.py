@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import os
 from pathlib import Path
 from typing import List, Dict
+from . import CHART_REVENUE_TREND, CHART_NET_INCOME_TREND, CHART_FCF_TREND
 
 
 def ensure_output_dir(output_dir: str = "generated_images") -> None:
@@ -72,7 +73,7 @@ def create_revenue_trend_chart(
         values=revenue,
         title="Revenue Trend (Last 10 Years)",
         ylabel="Revenue ($ Billions)",
-        filename="revenue_trend.png",
+        filename=CHART_REVENUE_TREND,
         color="#1E88E5",
         output_dir=output_dir
     )
@@ -89,7 +90,7 @@ def create_net_income_trend_chart(
         values=net_income,
         title="Net Income Trend (Last 10 Years)",
         ylabel="Net Income ($ Billions)",
-        filename="net_income_trend.png",
+        filename=CHART_NET_INCOME_TREND,
         color="#43A047",
         output_dir=output_dir
     )
@@ -106,7 +107,7 @@ def create_fcf_trend_chart(
         values=fcf,
         title="Free Cash Flow Trend (Last 10 Years)",
         ylabel="Free Cash Flow ($ Billions)",
-        filename="fcf_trend.png",
+        filename=CHART_FCF_TREND,
         color="#8E24AA",
         output_dir=output_dir
     )

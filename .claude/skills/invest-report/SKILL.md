@@ -69,10 +69,27 @@ description: 在当前文件夹生成对应公司的投资研究报告，markdow
 - **cap-agent**: 股息增长图、股数趋势图、资本配置分解图等
 - **cap-acq-agent**: 投资入股活动汇总、收购活动分析等
 
+**图片文件名规范**（必须严格遵循）：
+```
+业务板块:     business_segments.png      (不是 business_segments_pie.png)
+地理区域:     geographic_segments.png    (不是 geographic_segments_pie.png)
+成本结构:     cost_structure.png         (不是 cost_structure_pie.png)
+资产构成:     asset_composition.png
+负债构成:     liability_composition.png
+债务趋势:     debt_trend.png
+收入趋势:     revenue_trend.png
+净利润趋势:   net_income_trend.png
+现金流趋势:   fcf_trend.png
+股息增长:     dividend_growth.png
+股数趋势:     share_count_trend.png
+资本配置:     capital_allocation_breakdown.png
+```
+
 **图片引用要求**：
 - 读取各代理生成的报告文件，提取其中引用的图片路径
 - 在汇总报告的相应章节插入对应的图片引用
 - 确保所有生成的图片都被包含在最终报告中
+- **文件名必须与生成的实际文件名完全一致**
 
 **综合评估要求：**
 - 优势：汇总各模块分析中发现的正面因素

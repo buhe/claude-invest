@@ -6,6 +6,7 @@ Creates a line chart showing long-term debt trend over years
 
 import matplotlib.pyplot as plt
 import os
+from . import CHART_DEBT_TREND
 
 
 def generate_debt_trend_chart(years, debt_values, output_dir='generated_images'):
@@ -42,10 +43,10 @@ def generate_debt_trend_chart(years, debt_values, output_dir='generated_images')
     ax.spines['right'].set_visible(False)
 
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/debt_trend.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'{output_dir}/{CHART_DEBT_TREND}', dpi=300, bbox_inches='tight')
     plt.close()
 
-    print(f"✅ Chart saved: {output_dir}/debt_trend.png")
+    print(f"✅ Chart saved: {output_dir}/{CHART_DEBT_TREND}")
 
 
 if __name__ == '__main__':
