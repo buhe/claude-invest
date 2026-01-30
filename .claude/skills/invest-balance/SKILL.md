@@ -1,20 +1,20 @@
 ---
 name: invest-balance
-description: Generate comprehensive balance sheet research reports in markdown format from company annual reports (PDF) and reference materials (markdown). Use when user needs to create financial analysis reports focusing on balance sheet, asset composition, liability structure, and debt analysis. Triggered by requests for balance sheet analysis reports, asset liability composition analysis, debt trend analysis, financial statement research from annual reports, or investment research on company financial position
+description: Generate comprehensive balance sheet research reports in markdown format from company annual reports and reference materials (markdown). Use when user needs to create financial analysis reports focusing on balance sheet, asset composition, liability structure, and debt analysis. Triggered by requests for balance sheet analysis reports, asset liability composition analysis, debt trend analysis, financial statement research from annual reports, or investment research on company financial position
 ---
 
 # 资产负债表研究报告生成
 
 ## 概述
 
-从公司年报（PDF）和参考资料（markdown）中提取和分析财务数据，使用 Python matplotlib 创建数据可视化，生成专业的资产负债表研究报告（中文），图表标签使用英文。
+从公司年报（为了保证你的专注度，只使用最新一年的财报作为资料）和参考资料（markdown）中提取和分析财务数据，使用 Python matplotlib 创建数据可视化，生成专业的资产负债表研究报告（中文），图表标签使用英文。
 
 ## 工作流程
 
 ### 1. 数据收集与验证
 
 **读取源材料：**
-- 年报 PDF：提取资产负债表数据、附注和相关财务报表
+- 年报 ：提取资产负债表数据、附注和相关财务报表
 - 参考资料 markdown：审查现有财务数据和分析
 - 使用 `stockanalysis` skill 获取 5 年历史数据进行交叉验证
 - 数据准确很重要，参考资料中有历年三大表的数据，用于验证你从财报中获取的数据，以参考资料中数据为准。
