@@ -7,7 +7,7 @@ description: 从 stockanalysis.com 获取公司财务数据。当 Claude 需要�
 
 ## 概述
 
-使用 agent-browser 或 curl 从 [stockanalysis.com](https://stockanalysis.com/) 获取公司财务数据。可通过股票代码检索任何上市公司的财务报表和关键指标。
+使用 agent-browser 从 [stockanalysis.com](https://stockanalysis.com/) 获取公司财务数据。可通过股票代码检索任何上市公司的财务报表和关键指标。
 
 ## URL 模式
 
@@ -74,6 +74,7 @@ agent-browser open "https://stockanalysis.com/stocks/{股票代码}/financials/c
    - 指标行（营业收入、净利润、经营活动现金流、资本支出、自由现金流）
 
 5. **格式化输出**：以清晰的表格结构呈现
+6. **详细命令** Run agent-browser --help to see available commands
 
 ## 数据周期
 
