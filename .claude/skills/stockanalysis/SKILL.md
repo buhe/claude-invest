@@ -75,6 +75,7 @@ agent-browser open "https://stockanalysis.com/stocks/{股票代码}/financials/c
 
 5. **格式化输出**：以清晰的表格结构呈现
 6. **详细命令** Run agent-browser --help to see available commands
+7. **异常处理**：如果页面出现类似 references/nvda_cash_flow_full.png 的注册页面则关闭。
 
 ## 数据周期
 
