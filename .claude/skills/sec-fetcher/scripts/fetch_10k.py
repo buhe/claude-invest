@@ -53,9 +53,12 @@ def fetch_10k_filings(cik, years=5, output_dir=None, delay=2):
     参数:
         cik: SEC CIK (10位，带前导零)
         years: 下载最近几年的10-K (默认5年)
-        output_dir: 输出目录 (默认为 {公司名}_10K_Files)
+        output_dir: 输出目录 (默认为当前工作目录下的 {公司名}_10K_Files)
         delay: 每个文件下载之间的延迟秒数 (默认2秒)
     """
+    # 获取当前工作目录（调用者所在的目录）
+    cwd = os.getcwd()
+
     # 创建带重试的 session
     session = create_session_with_retry(retries=3, backoff_factor=1, timeout=60)
 
@@ -74,11 +77,18 @@ def fetch_10k_filings(cik, years=5, output_dir=None, delay=2):
     if company_name:
         # 清理公司名称用于文件夹
         company_name_clean = company_name.replace(' ', '_').replace('/', '_').replace('\\', '_')
-        if output_dir is None:
-            output_dir = f"{company_name_clean}_10K_Files"
-    else:
-        if output_dir is None:
-            output_dir = "10K_Files"
+
+    # 确定输出目录（相对于当前工作目录）
+    if output_dir is None:
+        # 使用简化的公司名称作为文件夹名
+        folder_name = company_name_clean.replace(' ', '').replace('_', '')
+        if not folder_name:
+            folder_name = "Company"
+        output_dir = os.path.join(cwd, folder_name)
+
+    # 如果提供了相对路径，转换为绝对路径（相对于当前工作目录）
+    elif not os.path.isabs(output_dir):
+        output_dir = os.path.join(cwd, output_dir)
 
     # 解析recent filings
     filings = data['filings']['recent']
@@ -131,7 +141,15 @@ def fetch_10k_filings(cik, years=5, output_dir=None, delay=2):
         if idx < len(tenk_df) - 1:
             time.sleep(delay)
 
-    print(f"所有下载完成！文件保存在 {output_dir} 文件夹。")
+    # 显示保存的相对路径（更友好）
+    if os.path.isabs(output_dir) and cwd:
+        try:
+            rel_path = os.path.relpath(output_dir, cwd)
+            print(f"所有下载完成！文件保存在: {rel_path}/")
+        except:
+            print(f"所有下载完成！文件保存在: {output_dir}/")
+    else:
+        print(f"所有下载完成！文件保存在: {output_dir}/")
     return True
 
 
