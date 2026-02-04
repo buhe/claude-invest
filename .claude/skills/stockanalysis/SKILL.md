@@ -8,6 +8,7 @@ description: 从 stockanalysis.com 获取公司财务数据。当 Claude 需要�
 ## 概述
 
 使用 agent-browser 从 [stockanalysis.com](https://stockanalysis.com/) 获取公司财务数据。可通过股票代码检索任何上市公司的财务报表和关键指标。
+stockanalysis 可以查询美股、港股（先转换成代码，如，腾讯 > 0700 https://stockanalysis.com/quote/hkg/0700/financials/）、A股（先转换成代码，如，茅台 > 600519 https://stockanalysis.com/quote/sha/600519/financials/）等股票的财务数据。
 
 ## URL 模式
 
