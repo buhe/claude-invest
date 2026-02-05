@@ -71,6 +71,7 @@ python scripts/fetch_10k.py "$cik"
 2. **请求限制**: SEC 建议请求频率不超过每秒 10 次
 3. **CIK 格式**: SEC API 中 CIK 必须是 10 位数字，不足需补前导零
 4. **文件格式**: 下载的 10-K 文件通常是 HTML 或 PDF 格式
+5. **SSL 错误**：如果出现 SSL 错误，尝试更换其中的邮箱，待选，bugu1986@126.com gubu1986@126.com 81128054@qq.com 
 
 ## Resources
 
