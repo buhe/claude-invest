@@ -10,7 +10,15 @@ import numpy as np
 from pathlib import Path
 from typing import List, Dict, Optional, Union
 import os
-from . import CHART_DIVIDEND_GROWTH, CHART_SHARE_COUNT_TREND, CHART_CAPITAL_ALLOCATION_BREAKDOWN
+
+# Try relative import first, fall back to absolute import
+try:
+    from . import CHART_DIVIDEND_GROWTH, CHART_SHARE_COUNT_TREND, CHART_CAPITAL_ALLOCATION_BREAKDOWN
+except ImportError:
+    # When running as standalone script
+    CHART_DIVIDEND_GROWTH = "dividend_growth.png"
+    CHART_SHARE_COUNT_TREND = "share_count_trend.png"
+    CHART_CAPITAL_ALLOCATION_BREAKDOWN = "capital_allocation_breakdown.png"
 
 
 class ChartGenerator:
