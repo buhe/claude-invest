@@ -13,9 +13,6 @@
 
 ## invest-report
 
-In current folder, provide historical trend data
-And, latest financial annual report.
-
 ![image-20260128195833127](https://raw.githubusercontent.com/buhe/pic/main/uPic/image-20260128195833127.png)
 
 *The generated report can be in various languages; for example, **it can be explicitly stated that the generated report will be in English**.*
