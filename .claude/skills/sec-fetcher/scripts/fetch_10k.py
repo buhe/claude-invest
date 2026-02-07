@@ -46,18 +46,19 @@ def create_session_with_retry(retries=3, backoff_factor=1, timeout=30):
     return session
 
 
-def fetch_10k_filings(cik, years=5, output_dir=None, delay=2):
+def fetch_10k_filings(cik, years=5, output_dir=None, delay=2, work_dir=None):
     """
     下载公司最近N年的10-K文件
 
     参数:
         cik: SEC CIK (10位，带前导零)
         years: 下载最近几年的10-K (默认5年)
-        output_dir: 输出目录 (默认为当前工作目录下的 {公司名}_10K_Files)
+        output_dir: 输出目录 (默认为工作目录下的 {公司名}_10K_Files)
         delay: 每个文件下载之间的延迟秒数 (默认2秒)
+        work_dir: 工作目录，用于解析相对路径 (默认为当前工作目录)
     """
-    # 获取当前工作目录（调用者所在的目录）
-    cwd = os.getcwd()
+    # 获取工作目录（优先使用传入的 work_dir，否则使用当前工作目录）
+    cwd = work_dir if work_dir is not None else os.getcwd()
 
     # 创建带重试的 session
     session = create_session_with_retry(retries=3, backoff_factor=1, timeout=60)
@@ -78,15 +79,12 @@ def fetch_10k_filings(cik, years=5, output_dir=None, delay=2):
         # 清理公司名称用于文件夹
         company_name_clean = company_name.replace(' ', '_').replace('/', '_').replace('\\', '_')
 
-    # 确定输出目录（相对于当前工作目录）
+    # 确定输出目录（相对于工作目录）
     if output_dir is None:
-        # 使用简化的公司名称作为文件夹名
-        folder_name = company_name_clean.replace(' ', '').replace('_', '')
-        if not folder_name:
-            folder_name = "Company"
-        output_dir = os.path.join(cwd, folder_name)
+        # 直接在工作目录下保存文件，不创建子文件夹
+        output_dir = cwd
 
-    # 如果提供了相对路径，转换为绝对路径（相对于当前工作目录）
+    # 如果提供了相对路径，转换为绝对路径（相对于工作目录）
     elif not os.path.isabs(output_dir):
         output_dir = os.path.join(cwd, output_dir)
 
@@ -157,12 +155,14 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("用法: python fetch_10k.py <CIK> [年数] [输出目录]")
+        print("用法: python fetch_10k.py <CIK> [年数] [输出目录] [工作目录]")
         print("示例: python fetch_10k.py 0000320193 5")
+        print("示例: python fetch_10k.py 0000320193 5 . /path/to/work/dir")
         sys.exit(1)
 
     cik = sys.argv[1].strip()
     years = int(sys.argv[2]) if len(sys.argv) > 2 else 5
     output_dir = sys.argv[3] if len(sys.argv) > 3 else None
+    work_dir = sys.argv[4] if len(sys.argv) > 4 else None
 
-    fetch_10k_filings(cik, years, output_dir)
+    fetch_10k_filings(cik, years, output_dir, work_dir=work_dir)

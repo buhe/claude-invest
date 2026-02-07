@@ -27,12 +27,16 @@ python scripts/get_cik.py "Microsoft"
 使用 CIK 下载最近 5 年的 10-K 文件：
 
 ```bash
-python scripts/fetch_10k.py "0000320193"        # Apple
+python scripts/fetch_10k.py "0000320193"        # Apple，保存到当前目录
 python scripts/fetch_10k.py "0000320193" 5     # 指定年数
-python scripts/fetch_10k.py "0000320193" 5 "Apple_Filings"  # 指定输出目录
+python scripts/fetch_10k.py "0000320193" 5 "output_dir"  # 指定输出目录
+python scripts/fetch_10k.py "0000320193" 5 "output_dir" "/path/to/work/dir"  # 指定工作目录
 ```
 
-文件会保存到 `{公司名}_10K_Files` 文件夹。
+**重要说明**：
+- 默认情况下，文件会保存到**当前工作目录**（不是脚本所在目录）
+- 通过 `work_dir` 参数可以指定工作目录，用于解析相对路径
+- 在 skill 执行时，应传递工作目录以确保文件下载到正确的位置
 
 ## 完整工作流
 
@@ -47,8 +51,11 @@ python scripts/fetch_10k.py "0000320193" 5 "Apple_Filings"  # 指定输出目录
 # 步骤1：获取 Apple 的 CIK
 cik=$(python scripts/get_cik.py "Apple" | tail -1)
 
-# 步骤2：下载财报
+# 步骤2：下载财报到当前目录
 python scripts/fetch_10k.py "$cik"
+
+# 或指定工作目录（推荐在 skill 执行时使用）
+python scripts/fetch_10k.py "$cik" 5 "." "/path/to/input/dir"
 ```
 
 ## API 说明
