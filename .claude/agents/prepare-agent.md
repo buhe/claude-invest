@@ -11,7 +11,11 @@ color: orange
 
 ### 1. 财报准备
 
-使用 sec-fetcher skill 从 SEC 数据库下载公司最近 5 年的财务报告，并将其保存到当前文件夹。
+判断公司在哪上市，不包括不确定问我
+
+美股：使用 sec-fetcher skill 从 SEC 数据库下载公司最近 5 年的财务报告，并将其保存到当前文件夹。
+
+港股：使用 hkex-fetcher skill 从 hkexnews.hk 网站下载公司最近 5 年的财务报告，并将其保存到当前文件夹。
 
 
 ### 2. 准备数据
