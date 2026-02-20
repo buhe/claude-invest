@@ -44,18 +44,20 @@ https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=zh
 
 **推荐方式：使用 JavaScript 提取链接 + curl 下载**
 
-首先获取最近 5 年的 PDF 链接：
+首先获取最近 5 年的 PDF 链接（注意年份文本格式可能不同，建议根据实际网页内容调整）：
 ```bash
-agent-browser eval "(async () => { const links = {}; ['2024', '2023', '2022', '2021', '2020'].forEach(year => { const a = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes(year + ' 年報')); if (a) links[year] = a.href; }); return links; })()"
+agent-browser eval "(async () => { const links = {}; ['2024年報', '2023年度報告', '2022年度報告', '2021年度報告', '二零二零年度報告'].forEach(text => { const a = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes(text)); if (a) links[text] = a.href; }); return links; })()"
 ```
 
-然后使用 curl 批量下载：
+然后使用 curl 下载（建议逐个下载，遇到网络错误可重试）：
 ```bash
 # 根据上一步返回的链接下载（示例）
-curl -o "00700_2024_年报.pdf" "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0408/2025040800668_c.pdf"
-curl -o "00700_2023_年报.pdf" "https://www1.hkexnews.hk/listedco/listconews/sehk/2024/0408/2024040801823_c.pdf"
+curl -o "00700_2024_年报.pdf" "<PDF_URL_2024>"
+curl -o "00700_2023_年报.pdf" "<PDF_URL_2023>"
 # ... 继续下载其他年份
 ```
+
+**如遇网络错误**：curl 可能返回 SSL 连接错误，重新执行失败的下载命令即可。
 
 **替代方式：点击链接下载**
 - 使用 `agent-browser click` 点击年报链接
@@ -80,22 +82,23 @@ agent-browser fill @e16 "00700"
 # 3. 确认自动补全
 agent-browser eval "Array.from(document.querySelectorAll('span')).find(s => s.textContent.includes('騰訊'))?.click()"
 
-# 4. 设置标题类别（假设 snapshot 后 refs 为 e18-e24）
+# 4. 设置标题类别（假设 snapshot 后 refs 为 e18-e26）
 agent-browser click @e18        # 点击第一个"所有"
 agent-browser click @e20        # 选择"標題類別"
 agent-browser click @e19        # 点击第二个"所有"
 agent-browser click @e24        # 选择"財務報表/環境、社會及管治資料"
 agent-browser click @e26        # 选择"年報"
 
-# 5. 执行搜尋
-agent-browser click @e24        # 点击"搜尋"按钮
+# 5. 执行搜尋（重新获取 snapshot，找到搜尋按钮的 ref）
+agent-browser snapshot -i
+agent-browser click @<搜尋按钮的ref>        # 点击"搜尋"按钮
 
 # 6. 等待结果并获取 PDF 链接
 agent-browser wait 5000
-agent-browser eval "(async () => { const links = {}; ['2024', '2023', '2022', '2021', '2020'].forEach(year => { const a = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes(year + ' 年報')); if (a) links[year] = a.href; }); return links; })()"
+agent-browser eval "(async () => { const links = {}; ['2024年報', '2023年度報告', '2022年度報告', '2021年度報告', '二零二零年度報告'].forEach(text => { const a = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes(text)); if (a) links[text] = a.href; }); return links; })()"
 
-# 7. 使用 curl 下载（根据上一步返回的链接）
-curl -o "00700_2024_年报.pdf" "<PDF_URL>"
+# 7. 使用 curl 下载（根据上一步返回的链接，逐个下载以便处理错误）
+curl -o "00700_2024_年报.pdf" "<PDF_URL_2024>"
 # ... 下载其他年份
 
 # 8. 关闭浏览器
@@ -110,3 +113,5 @@ agent-browser close
 - 如果股票代码无效，系统会显示无结果，需要提示用户确认
 - 下载的文件用于投资分析，请遵守港交所的使用条款
 - URL 需要用引号包裹，避免 shell 解析错误
+- **网络不稳定时**：curl 可能返回 SSL 连接错误 (SSL_ERROR_SYSCALL)，重新执行失败的下载命令即可
+- **年份文本格式不统一**：网页上年份可能显示为「2024年報」、「2023年度報告」或「二零二零年度報告」，JS 代码需要根据实际情况调整
