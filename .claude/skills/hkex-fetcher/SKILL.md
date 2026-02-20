@@ -21,14 +21,16 @@ https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=zh
 
 ### 步骤 2：填写搜索表单
 
+**重要**：每次操作前务必执行 `agent-browser snapshot -i` 获取最新的 refs。
+
 按照以下顺序填写表单字段：
 
 | 字段 | 值/操作 |
 |------|---------|
 | **搜索類型** | 选择「現有上市」（保持默认） |
-| **證券 股份代號/股份名稱** | 输入股票代码（如 `00700` 或 `騰訊控股`），等待自动补全，然后执行以下命令确认：<br>`agent-browser eval "Array.from(document.querySelectorAll('span')).find(s => s.textContent.includes('騰訊'))?.click()"` |
-| **標題類別及文件類別** | 1. 点击第一个「所有」下拉框<br>2. 选择「標題類別」<br>3. 点击第二个「所有」下拉框<br>4. 选择「財務報表/環境、社會及管治資料」<br>5. 选择子菜单中的「年報」 |
-| **開始日期** | 使用默认值（2007/06/25），无需修改 |
+| **證券 股份代號/股份名稱** | 输入股票代码（如 `00700`），等待自动补全出现（检测 `<tbody>` 是否有子元素），然后执行命令确认：<br>`agent-browser eval "(async () => { while (true) { const tbody = document.querySelector('#autocomplete-list-0 tbody'); if (tbody && tbody.children.length > 0) { const firstRow = tbody.querySelector('tr'); firstRow?.click(); return 'Autocomplete found and clicked'; } await new Promise(r => setTimeout(r, 1000)); } })()"` |
+| **標題類別及文件類別** | 1. snapshot 后点击第一个「所有」下拉框<br>2. 选择「標題類別」<br>3. 重新 snapshot，点击第二个「所有」下拉框<br>4. 选择「財務報表/環境、社會及管治資料」<br>5. 选择子菜单中的「年報」 |
+| **開始日期** | 使用默认值，无需修改 |
 | **完結日期** | 使用当前日期（格式：YYYY/MM/DD），默认已填充 |
 | **訊息標題** | 留空，不输入任何内容 |
 
@@ -44,9 +46,9 @@ https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=zh
 
 **推荐方式：使用 JavaScript 提取链接 + curl 下载**
 
-首先获取最近 5 年的 PDF 链接（注意年份文本格式可能不同，建议根据实际网页内容调整）：
+首先获取最近 5 年的 PDF 链接（动态计算年份，只匹配年份即可）：
 ```bash
-agent-browser eval "(async () => { const links = {}; ['2024年報', '2023年度報告', '2022年度報告', '2021年度報告', '二零二零年度報告'].forEach(text => { const a = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes(text)); if (a) links[text] = a.href; }); return links; })()"
+agent-browser eval "(async () => { const currentYear = new Date().getFullYear(); const links = {}; for (let i = 0; i < 5; i++) { const year = currentYear - i; const a = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes(year.toString())); if (a) links[year] = a.href; } return links; })()"
 ```
 
 然后使用 curl 下载（建议逐个下载，遇到网络错误可重试）：
@@ -76,30 +78,36 @@ curl -o "00700_2023_年报.pdf" "<PDF_URL_2023>"
 # 1. 打开搜索页面
 agent-browser open "https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=zh"
 
-# 2. 填写股票代码
-agent-browser fill @e16 "00700"
-
-# 3. 确认自动补全
-agent-browser eval "Array.from(document.querySelectorAll('span')).find(s => s.textContent.includes('騰訊'))?.click()"
-
-# 4. 设置标题类别（假设 snapshot 后 refs 为 e18-e26）
-agent-browser click @e18        # 点击第一个"所有"
-agent-browser click @e20        # 选择"標題類別"
-agent-browser click @e19        # 点击第二个"所有"
-agent-browser click @e24        # 选择"財務報表/環境、社會及管治資料"
-agent-browser click @e26        # 选择"年報"
-
-# 5. 执行搜尋（重新获取 snapshot，找到搜尋按钮的 ref）
+# 2. 获取页面 refs 并填写股票代码
 agent-browser snapshot -i
-agent-browser click @<搜尋按钮的ref>        # 点击"搜尋"按钮
+agent-browser fill @<股份代号输入框ref> "00700"
 
-# 6. 等待结果并获取 PDF 链接
+# 3. 等待并确认自动补全（检测 tbody 是否有子元素，然后点击第一行）
+agent-browser eval "(async () => { while (true) { const tbody = document.querySelector('#autocomplete-list-0 tbody'); if (tbody && tbody.children.length > 0) { const firstRow = tbody.querySelector('tr'); firstRow?.click(); return 'Autocomplete found and clicked'; } await new Promise(r => setTimeout(r, 1000)); } })()"
+
+# 4. 设置标题类别 - 每步都需要重新 snapshot
+agent-browser snapshot -i
+agent-browser click @<第一个"所有"ref>        # 点击第一个下拉框
+agent-browser snapshot -i
+agent-browser click @<"標題類別"ref>          # 选择標題類別
+agent-browser snapshot -i
+agent-browser click @<第二个"所有"ref>        # 点击第二个下拉框
+agent-browser snapshot -i
+agent-browser click @<"財務報表"ref>          # 选择財務報表
+agent-browser snapshot -i
+agent-browser click @<"年報"ref>              # 选择年報
+
+# 5. 执行搜尋
+agent-browser snapshot -i
+agent-browser click @<搜尋按钮ref>           # 点击"搜尋"按钮
+
+# 6. 等待结果并获取 PDF 链接（动态计算最近 5 年，只匹配年份）
 agent-browser wait 5000
-agent-browser eval "(async () => { const links = {}; ['2024年報', '2023年度報告', '2022年度報告', '2021年度報告', '二零二零年度報告'].forEach(text => { const a = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes(text)); if (a) links[text] = a.href; }); return links; })()"
+agent-browser eval "(async () => { const currentYear = new Date().getFullYear(); const links = {}; for (let i = 0; i < 5; i++) { const year = currentYear - i; const a = Array.from(document.querySelectorAll('a')).find(el => el.textContent.includes(year.toString())); if (a) links[year] = a.href; } return links; })()"
 
 # 7. 使用 curl 下载（根据上一步返回的链接，逐个下载以便处理错误）
-curl -o "00700_2024_年报.pdf" "<PDF_URL_2024>"
-# ... 下载其他年份
+curl -o "00700_${year}_年报.pdf" "<PDF_URL>"  # 替换 ${year} 和 <PDF_URL> 为实际值
+# ... 继续下载其他年份
 
 # 8. 关闭浏览器
 agent-browser close
@@ -108,10 +116,11 @@ agent-browser close
 ## 注意事项
 
 - 确保网络连接正常，能够访问港交所网站
-- **refs（如 @e16, @e18）可能随页面变化**，每次操作前务必执行 `agent-browser snapshot -i` 获取最新的 refs
-- 搜索结果可能包含多个版本的年报（如英文版、中文版），根据用户偏好选择
+- **refs（如 @e16, @e18）每次页面加载都会变化**，务必在每次操作前执行 `agent-browser snapshot -i` 获取最新的 refs
+- **年份匹配**：由于搜索时已设置"年报"类别，结果中包含年份（如 "2024"）的就一定是年报，无需额外匹配"年報"或"年度報告"
+- **自动补全确认**：通过检测 `#autocomplete-list-0 tbody` 是否有子元素来判断补全是否完成，然后自动点击第一行。如需选择特定结果，可修改 `tbody.querySelector('tr')` 为 `tbody.children[index]`（从 0 开始）
+- 搜索结果可能包含多个版本的年报（如英文版、中文版），默认获取中文版本（链接包含 `_c.pdf`）
 - 如果股票代码无效，系统会显示无结果，需要提示用户确认
 - 下载的文件用于投资分析，请遵守港交所的使用条款
 - URL 需要用引号包裹，避免 shell 解析错误
-- **网络不稳定时**：curl 可能返回 SSL 连接错误 (SSL_ERROR_SYSCALL)，重新执行失败的下载命令即可
-- **年份文本格式不统一**：网页上年份可能显示为「2024年報」、「2023年度報告」或「二零二零年度報告」，JS 代码需要根据实际情况调整
+- **网络不稳定时**：curl 可能返回 SSL 连接错误或下载缓慢，重新执行失败的下载命令即可
