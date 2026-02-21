@@ -101,3 +101,7 @@ StockAnalysis 提供多种数据格式：
 | 伯克希尔·哈撒韦 | BRK.B |
 | 强生 | JNJ |
 | 摩根大通 | JPM |
+
+## 单位
+
+- 使用什么货币单位绘制数据页面说明，如：Financials in millions USD.
