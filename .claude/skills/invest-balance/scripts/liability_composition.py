@@ -50,7 +50,7 @@ def generate_liability_composition_chart(liability_data, year, output_dir='gener
     plt.savefig(f'{output_dir}/{CHART_LIABILITY_COMPOSITION}', dpi=300, bbox_inches='tight')
     plt.close()
 
-    print(f"✅ Chart saved: {output_dir}/{CHART_LIABILITY_COMPOSITION}")
+    print(f"[OK] Chart saved: {output_dir}/{CHART_LIABILITY_COMPOSITION}")
 
 
 if __name__ == '__main__':

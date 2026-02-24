@@ -50,7 +50,7 @@ def generate_asset_composition_chart(asset_data, year, output_dir='generated_ima
     plt.savefig(f'{output_dir}/{CHART_ASSET_COMPOSITION}', dpi=300, bbox_inches='tight')
     plt.close()
 
-    print(f"✅ Chart saved: {output_dir}/{CHART_ASSET_COMPOSITION}")
+    print(f"[OK] Chart saved: {output_dir}/{CHART_ASSET_COMPOSITION}")
 
 
 if __name__ == '__main__':

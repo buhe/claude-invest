@@ -13,7 +13,7 @@ import sys
 
 # === 重要：请替换为您的真实信息 ===
 headers = {
-    "User-Agent": "bear bugu1986@gmail.com"
+    "User-Agent": "bear 81128054@qq.com"
 }
 
 

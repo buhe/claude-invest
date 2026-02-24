@@ -46,7 +46,7 @@ def generate_debt_trend_chart(years, debt_values, output_dir='generated_images')
     plt.savefig(f'{output_dir}/{CHART_DEBT_TREND}', dpi=300, bbox_inches='tight')
     plt.close()
 
-    print(f"✅ Chart saved: {output_dir}/{CHART_DEBT_TREND}")
+    print(f"[OK] Chart saved: {output_dir}/{CHART_DEBT_TREND}")
 
 
 if __name__ == '__main__':
