@@ -1,16 +1,3 @@
-## Prerequisites
-
-- **Financial** skill need `agent-browser` 
-
-  - Install `agent-browser` and make sure it is available on your PATH:
-
-    ```bash
-    npm install -g agent-browser
-    agent-browser install  # Download Chromium
-    ```
-
-- A working shell (macOS, Linux, or Windows WSL) with network access.
-
 ## invest-report
 
 Claude Code prompt:「研究苹果公司，生成一份中文投资报告」
