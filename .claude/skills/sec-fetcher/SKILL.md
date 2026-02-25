@@ -1,13 +1,16 @@
 ---
 name: sec-fetcher
-description: 根据公司名称获取 SEC CIK 并下载公司年度 10-K 财报文件。当用户需要以下操作时使用：(1) 根据公司名获取 SEC CIK，(2) 下载公司的 10-K 年度财报文件，(3) 获取 SEC EDGAR 系统中的公司 filing 数据，或请求美国上市公司的年报文件
+description: 根据公司名称获取 SEC CIK 并下载公司年度财报文件（美国本土公司 10-K，外国公司 20-F）。当用户需要以下操作时使用：(1) 根据公司名获取 SEC CIK，(2) 下载公司的年度财报文件（自动检测 10-K 或 20-F），(3) 获取 SEC EDGAR 系统中的公司 filing 数据，或请求在美国上市的公司的年报文件
 ---
 
 # SEC Fetcher
 
 ## Overview
 
-通过 SEC EDGAR 系统获取美国上市公司的 CIK（Central Index Key）和年度 10-K 财报文件。
+通过 SEC EDGAR 系统获取在美国上市公司的 CIK（Central Index Key）和年度财报文件。
+
+- **美国本土公司**：下载 10-K 年度财报
+- **外国公司**：下载 20-F 年度财报（自动检测）
 
 ## Quick Start
 
@@ -22,21 +25,29 @@ python scripts/get_cik.py "Microsoft"
 
 脚本会显示所有匹配结果并返回第一个 CIK（10位，带前导零）。
 
-### 下载 10-K 财报
+### 下载年度财报
 
-使用 CIK 下载最近 5 年的 10-K 文件：
+使用 CIK 下载最近 5 年的年度财报文件（自动检测 10-K 或 20-F）：
 
 ```bash
-python scripts/fetch_10k.py "0000320193"        # Apple，保存到当前目录
+python scripts/fetch_10k.py "0000320193"        # Apple（美国公司，下载 10-K）
 python scripts/fetch_10k.py "0000320193" 5     # 指定年数
 python scripts/fetch_10k.py "0000320193" 5 "output_dir"  # 指定输出目录
 python scripts/fetch_10k.py "0000320193" 5 "output_dir" "/path/to/work/dir"  # 指定工作目录
+```
+
+**外国公司示例**（自动下载 20-F）：
+```bash
+python scripts/fetch_10k.py "0001000697"        # Novo Nordisk（丹麦公司，自动下载 20-F）
 ```
 
 **重要说明**：
 - 默认情况下，文件会保存到**当前工作目录**（不是脚本所在目录）
 - 通过 `work_dir` 参数可以指定工作目录，用于解析相对路径
 - 在 skill 执行时，应传递工作目录以确保文件下载到正确的位置
+- 脚本会自动检测公司类型并下载相应的报表：
+  - 美国本土公司 → 10-K
+  - 外国公司 → 20-F
 
 ## 完整工作流
 
