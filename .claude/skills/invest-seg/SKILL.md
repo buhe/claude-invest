@@ -67,11 +67,7 @@ description: 在包含公司年报和参考资料（markdown）的当前目录�
 - 只分析官方报告板块
 - 不要试图从其他来源"补充"数据
 
-**数据来源评估**：
-- 交叉对比参考资料与 stockanalysis skill 数据
-- 评估数据来源的权威性、严谨性和相关性
-- 关键主张需要 2 个或以上独立来源支持
-- 记录所有矛盾点，不得隐藏
+**数据来源评估**：详见 `invest-report/references/common-guidelines.md`（数据验证规范）。
 
 **使用 stockanalysis skill**：
 ```
@@ -106,14 +102,7 @@ description: 在包含公司年报和参考资料（markdown）的当前目录�
 
 ### 4. 图表生成规则
 
-**关键要求**：
-- 最多生成 10 张图表
-- 所有图表标签和标题必须使用**英文**（即使报告是中文）
-- 分辨率：300 DPI
-- 线图/柱状图使用 16:9 比例 (figsize=12x6)
-- 饼图使用 1:1 比例 (figsize=10x8)
-- Python 代码保存在 `scripts/` 文件夹
-- 图表保存到 `generated_images/` 目录
+**图表生成规范：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
 
 **图表模板**：
 
@@ -183,7 +172,8 @@ EOF
 - 地理区域划分需明确（如印度、中东归属）
 - 时间基准：昨日日期
 - 数据矛盾必须在报告中注明
-- 所有图表使用英文标签
+
+**语言和图表规范：** 详见 `invest-report/references/common-guidelines.md`
 
 ### 6.1 业务板块分析重要注意事项 ⚠️⚠️⚠️
 

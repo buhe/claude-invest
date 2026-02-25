@@ -14,16 +14,12 @@ description: Generate comprehensive balance sheet research reports in markdown f
 ### 1. 数据收集与验证
 
 **读取源材料：**
-- 年报 ：提取资产负债表数据、附注和相关财务报表
+- 年报：提取资产负债表数据、附注和相关财务报表
 - 参考资料 markdown：审查现有财务数据和分析
 - 使用 `stockanalysis` skill 获取 5 年历史数据进行交叉验证
 - 数据准确很重要，参考资料中有历年三大表的数据，用于验证你从财报中获取的数据，以参考资料中数据为准。
 
-**数据验证要求：**
-- 评估数据来源的权威性、严谨性和相关性
-- 关键主张必须有 2 个及以上独立来源支持
-- 引用相同出处的来源算作 1 个来源（而非 2 个）
-- 透明记录所有矛盾点
+**数据验证要求：** 详见 `invest-report/references/common-guidelines.md`（数据验证规范）。
 
 ### 2. 报告结构
 
@@ -171,12 +167,7 @@ description: Generate comprehensive balance sheet research reports in markdown f
 
 ### 3. 图表生成（最多 10 个图表）
 
-**关键要求：**
-- 所有图表必须使用 Python matplotlib 生成真实数据 - 禁止使用 AI 图像生成
-- 所有图表标签、标题和文本必须使用英文
-- 所有图表分辨率：300 DPI
-- 保存到 `generated_images/` 子目录
-- 从实际数据中动态提取年份 - 禁止硬编码
+**图表生成规范：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
 
 **必需图表：**
 
@@ -293,10 +284,7 @@ generate_debt_trend_chart(years, debt_values)
 
 **时间参考：** 使用昨日日期作为当前参考点
 
-**语言：**
-- 报告正文：中文
-- 图表标签/标题：英文
-- 财务术语：使用专业中文术语（如 流动资产、非流动负债）
+**语言规范：** 详见 `invest-report/references/common-guidelines.md`
 
 **质量标准：**
 - 将 PDF 数据与 stockanalysis skill 数据交叉验证

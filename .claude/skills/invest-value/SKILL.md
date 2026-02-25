@@ -21,6 +21,8 @@ description: "从公司年报和参考资料（markdown）生成全面的企业�
 2. **使用 stockanalysis 技能交叉验证** - 使用 `stockanalysis` 技能获取过去5年的财务数据进行验证
 3. **解决数据差异** - 如果数据来源之间存在冲突，记录差异并注明哪个来源更具权威性
 
+**数据验证要求：** 详见 `invest-report/references/common-guidelines.md`（数据验证规范）。
+
 **所需数据：**
 - 营业收入
 - 净利润
@@ -35,12 +37,7 @@ description: "从公司年报和参考资料（markdown）生成全面的企业�
 
 ### 步骤2：生成图表（必填 - 最多10张图表）
 
-**关键要求：**
-- 使用 Python matplotlib 与真实数据 - 禁止使用 AI 图像生成工具
-- 所有图表标签、标题和文本必须使用英文
-- 分辨率：300 DPI
-- 保存到当前工作目录的 `generated_images/` 子目录
-- 每份报告最多10张图表
+**图表生成规范：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
 
 **必需图表：**
 

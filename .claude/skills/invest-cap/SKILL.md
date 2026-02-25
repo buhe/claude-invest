@@ -130,11 +130,7 @@ description: 在包含公司年报和参考资料（markdown）的当前目录�
 
 ### 步骤 3：验证数据来源
 
-对每个关键主张：
-- **使用 2 个或以上独立来源验证**
-- 相同的原始来源 = 1 个来源（不是 2 个）
-- **记录任何矛盾** - 不要隐藏
-- 评估来源：权威性、严谨性、相关性
+**数据验证要求：** 详见 `invest-report/references/common-guidelines.md`（数据验证规范）。
 
 ### 步骤 4：生成图表
 
@@ -164,12 +160,7 @@ generator.capital_allocation_breakdown(years, dividends, repurchases)
 - 不要在 skill 目录或任何其他位置生成图片
 - 在 markdown 报告中引用图片时使用相对路径：`![描述](generated_images/图片名.png)`
 
-**图表要求：**
-- 每份报告最多 10 个图表
-- 分辨率：300 DPI
-- 所有标签和标题必须使用**英文**
-- 从数据中动态提取年份（不要硬编码）
-- 保存到**当前工作目录**的 `generated_images/` 目录
+**图表要求：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
 
 ### 步骤 5：撰写报告
 

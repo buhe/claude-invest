@@ -140,14 +140,7 @@ description: 在当前文件夹生成对应公司的投资入股、收购、并�
 
 ### 步骤 3：交叉验证数据
 
-**多来源验证原则：**
-- 年报数据（主要来源）
-- 参考资料（如有markdown文件）
-- 相邻年份数据一致性检查
-
-**记录差异：**
-- 如发现数据矛盾，在报告中注明
-- 说明数据来源和判断依据
+**数据验证要求：** 详见 `invest-report/references/common-guidelines.md`（数据验证规范）。
 
 ### 步骤 4：生成可视化图表
 
@@ -176,10 +169,7 @@ generator.investment_type_breakdown(
 )
 ```
 
-**图表要求：**
-- 所有标签使用英文
-- 300 DPI 分辨率
-- 保存到 `generated_images/` 目录
+**图表要求：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
 
 ### 步骤 5：撰写报告
 
