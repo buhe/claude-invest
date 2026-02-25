@@ -128,7 +128,7 @@ description: 在当前文件夹生成对应公司的投资研究报告，markdow
 
 #### 生成最终报告
 
-满足上述条件后，**基于 diff-agent 生成的报告**（不是原始分析报告），按照 `references/report_template.md` 中的模板结构生成完整的投资研究报告：
+满足上述条件后，为了节省上下文，**基于 diff-agent 生成的报告**（不是原始分析报告），按照 `references/report_template.md` 中的模板结构生成完整的投资研究报告：
 
 **报告结构：**
 1. 报告摘要（核心观点、关键指标、投资评级）
