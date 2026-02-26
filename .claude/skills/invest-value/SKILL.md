@@ -35,41 +35,176 @@ description: "从公司年报和参考资料（markdown）生成全面的企业�
 - 短期投资
 - 当前总市值
 
-### 步骤2：生成图表（必填 - 最多10张图表）
+### 步骤2：生成图表（强制执行）
 
-**图表生成规范：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
+⚠️ **重要**：在完成报告时，**必须**执行以下步骤来生成图表：
+
+1. **创建图表生成脚本**：在当前目录创建Python脚本
+2. **执行脚本生成图表**：使用Bash工具运行Python脚本
+3. **验证图表文件**：检查 `generated_images/` 目录是否包含生成的图片
+4. **在报告中引用图片**：使用markdown语法引用图表
 
 **必需图表：**
 
-1. **营业收入趋势** (`revenue_trend.png`) - 蓝色线条 (#1E88E5)
-2. **净利润趋势** (`net_income_trend.png`) - 绿色线条 (#43A047)
-3. **自由现金流趋势** (`fcf_trend.png`) - 紫色线条 (#8E24AA)
+1. **营业收入趋势** (`revenue_trend.png`) - 蓝色主题
+2. **净利润趋势** (`net_income_trend.png`) - 绿色主题（亏损为红色）
+3. **自由现金流趋势** (`fcf_trend.png`) - 紫色主题
 
-**使用捆绑脚本：**
-
-此技能包含 `scripts/generate_charts.py`，提供以下函数：
-- `create_revenue_trend_chart(years, revenue, output_dir)`
-- `create_net_income_trend_chart(years, net_income, output_dir)`
-- `create_fcf_trend_chart(years, fcf, output_dir)`
-- `generate_all_charts(financial_data, output_dir)`
-
-**示例：**
+**创建图表生成脚本模板：**
 
 ```python
-import sys
-sys.path.insert(0, '/Users/guyanhua/.claude/skills/invest-value/scripts')
-from generate_charts import generate_all_charts
+#!/usr/bin/env python3
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+os.makedirs('generated_images', exist_ok=True)
 
-financial_data = {
-    'years': ['2019', '2020', '2021', '2022', '2023', '2024'],
-    'revenue': [100, 110, 125, 140, 155, 170],
-    'net_income': [20, 22, 25, 28, 31, 35],
-    'fcf': [18, 20, 23, 26, 29, 32]
-}
-generate_all_charts(financial_data, output_dir="generated_images")
+# 从实际数据中提取的年份和数值
+years = ['2020', '2021', '2022', '2023', '2024']  # 替换为实际数据
+revenue = [183.16, 200.23, 200.39, 445.10, 532.94]  # 替换为实际数据（亿元）
+net_income = [-32.47, -0.55, 1.40, 9.92, 17.07]  # 替换为实际数据（亿元）
+operating_cf = [-38.23, 24.75, 26.41, 220.04, 196.25]  # 替换为实际数据（亿元）
+capex = [5.32, 5.70, 4.97, 6.06, 5.91]  # 替换为实际数据（亿元）
+fcf = [round(operating_cf[i] - capex[i], 2) for i in range(len(years))]
+
+# 图表1：收入趋势
+def create_revenue_trend():
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
+
+    # 收入柱状图
+    bars = ax1.bar(years, revenue, color='#1E88E5', edgecolor='white', linewidth=1.5)
+    ax1.set_ylabel('Revenue (Billion CNY)', fontsize=11, fontweight='bold')
+    ax1.set_title('Revenue Trend (2020-2024)', fontsize=13, fontweight='bold')
+    ax1.grid(axis='y', alpha=0.3)
+    for bar, val in zip(bars, revenue):
+        height = bar.get_height()
+        ax1.annotate(f'{val:.0f}', xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 5), textcoords="offset points", ha='center', va='bottom',
+                    fontsize=10, fontweight='bold')
+
+    # 增长率折线图
+    growth_rate = [(revenue[i] - revenue[i-1]) / revenue[i-1] * 100 if i > 0 else 0
+                   for i in range(len(revenue))]
+    colors = ['red' if x < 0 else '#43A047' for x in growth_rate]
+    ax2.plot(years, growth_rate, marker='o', markersize=10, linewidth=2.5, color='#2E7D32')
+    ax2.bar(years, growth_rate, color=colors, alpha=0.6, width=0.6)
+    ax2.set_ylabel('Growth Rate (%)', fontsize=11, fontweight='bold')
+    ax2.set_xlabel('Year', fontsize=11, fontweight='bold')
+    ax2.set_title('Revenue Growth Rate', fontsize=12, fontweight='bold')
+    ax2.grid(axis='y', alpha=0.3)
+    ax2.axhline(y=0, color='black', linestyle='-', linewidth=0.8)
+    for i, (x, y) in enumerate(zip(years, growth_rate)):
+        ax2.annotate(f'{y:.1f}%', xy=(i, y), xytext=(0, 10 if y > 0 else -15),
+                    textcoords="offset points", ha='center', va='bottom' if y > 0 else 'top',
+                    fontsize=10, fontweight='bold', color=colors[i])
+
+    plt.tight_layout()
+    plt.savefig('generated_images/revenue_trend.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('[OK] revenue_trend.png')
+
+# 图表2：净利润趋势
+def create_net_income_trend():
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
+
+    # 净利润柱状图
+    colors = ['#E53935' if x < 0 else '#43A047' for x in net_income]
+    bars = ax1.bar(years, net_income, color=colors, edgecolor='white', linewidth=1.5)
+    ax1.set_ylabel('Net Income (Billion CNY)', fontsize=11, fontweight='bold')
+    ax1.set_title('Net Income Trend (2020-2024)', fontsize=13, fontweight='bold')
+    ax1.grid(axis='y', alpha=0.3)
+    ax1.axhline(y=0, color='black', linestyle='-', linewidth=0.8)
+    for bar, val in zip(bars, net_income):
+        height = bar.get_height()
+        ax1.annotate(f'{val:.1f}', xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 5 if height > 0 else -15), textcoords="offset points",
+                    ha='center', va='bottom' if height > 0 else 'top',
+                    fontsize=10, fontweight='bold')
+
+    # 净利率折线图
+    net_margin = [net_income[i] / revenue[i] * 100 for i in range(len(years))]
+    ax2.plot(years, net_margin, marker='o', markersize=10, linewidth=2.5, color='#1E88E5')
+    ax2.fill_between(years, net_margin, alpha=0.3, color='#1E88E5')
+    ax2.set_ylabel('Net Margin (%)', fontsize=11, fontweight='bold')
+    ax2.set_xlabel('Year', fontsize=11, fontweight='bold')
+    ax2.set_title('Net Profit Margin', fontsize=12, fontweight='bold')
+    ax2.grid(axis='y', alpha=0.3)
+    for i, (x, y) in enumerate(zip(years, net_margin)):
+        ax2.annotate(f'{y:.1f}%', xy=(i, y), xytext=(0, 10),
+                    textcoords="offset points", ha='center', va='bottom',
+                    fontsize=10, fontweight='bold')
+
+    plt.tight_layout()
+    plt.savefig('generated_images/net_income_trend.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('[OK] net_income_trend.png')
+
+# 图表3：自由现金流趋势
+def create_fcf_trend():
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    x = np.arange(len(years))
+    width = 0.25
+
+    colors1 = ['#E53935' if x < 0 else '#43A047' for x in operating_cf]
+    bars1 = ax.bar(x - width, operating_cf, width, label='Operating CF', color=colors1,
+                   edgecolor='white', linewidth=1)
+
+    bars2 = ax.bar(x, capex, width, label='Capital Expenditure', color='#FF9800',
+                   edgecolor='white', linewidth=1)
+
+    colors3 = ['#E53935' if x < 0 else '#1E88E5' for x in fcf]
+    bars3 = ax.bar(x + width, fcf, width, label='Free Cash Flow', color=colors3,
+                   edgecolor='white', linewidth=1)
+
+    ax.set_ylabel('Amount (Billion CNY)', fontsize=12, fontweight='bold')
+    ax.set_xlabel('Year', fontsize=12, fontweight='bold')
+    ax.set_title('Free Cash Flow Analysis (2020-2024)', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(years)
+    ax.legend(loc='upper left')
+    ax.grid(axis='y', alpha=0.3)
+    ax.axhline(y=0, color='black', linestyle='-', linewidth=0.8)
+
+    plt.tight_layout()
+    plt.savefig('generated_images/fcf_trend.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('[OK] fcf_trend.png')
+
+if __name__ == '__main__':
+    create_revenue_trend()
+    create_net_income_trend()
+    create_fcf_trend()
+    print('\nAll charts generated successfully!')
 ```
 
-**重要提示：** 从实际数据中动态提取年份 - 禁止硬编码。确保年份列表长度与数据值长度匹配。
+**执行步骤：**
+
+1. 将上述脚本保存到当前目录（替换为从年报提取的实际数据）
+2. 使用Bash工具执行：
+   ```bash
+   python generate_value_charts.py
+   ```
+3. 验证图表已生成：
+   ```bash
+   ls generated_images/
+   ```
+4. 在报告中引用图片：
+   ```markdown
+   ![营业收入趋势](generated_images/revenue_trend.png)
+   ![净利润趋势](generated_images/net_income_trend.png)
+   ![自由现金流趋势](generated_images/fcf_trend.png)
+   ```
+
+**验证清单：**
+```
+□ Python脚本已创建并执行
+□ generated_images/目录已创建
+□ 所有3张图表已生成
+□ 报告中已正确引用所有图片
+```
 
 ### 步骤3：编写估值报告
 

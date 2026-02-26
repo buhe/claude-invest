@@ -104,51 +104,120 @@ description: 在包含公司年报和参考资料（markdown）的当前目录�
 
 **图表生成规范：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
 
+**强制要求：必须生成图表并插入到报告中**
+
+⚠️ **重要**：在完成报告时，**必须**执行以下步骤来生成图表：
+
+1. **创建图表生成脚本**：在当前目录创建Python脚本，使用从年报中提取的实际数据
+2. **执行脚本生成图表**：使用Bash工具运行Python脚本
+3. **验证图表文件**：检查 `generated_images/` 目录是否包含生成的图片
+4. **在报告中引用图片**：使用markdown语法 `![描述](generated_images/文件名.png)` 引用图表
+
 **图表模板**：
 
-在报告中生成图表时，使用 scripts/generate_charts.py 中的函数：
+创建一个Python脚本（如 `generate_seg_charts.py`）来生成图表：
 
 ```python
+#!/usr/bin/env python3
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import os
+os.makedirs('generated_images', exist_ok=True)
+
 # 业务板块饼图
-segments = ['Product A', 'Product B', 'Services', 'Other']  # 必须使用英文名
-percentages = [35, 25, 30, 10]
-create_business_segments_pie(segments, percentages, '2024')
+def create_business_segments_pie(segments, percentages, year):
+    labels = [f'{s}\n{p}%' for s, p in zip(segments, percentages)]
+    colors = ['#1E88E5', '#43A047', '#FB8C00', '#E53935', '#8E24AA']
+    explode = [0.05 if p == max(percentages) else 0 for p in percentages]
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    ax.pie(percentages, explode=explode, labels=labels, colors=colors,
+           autopct='%1.1f%%', startangle=90)
+    ax.set_title(f'Business Segments Revenue ({year})', fontsize=14, fontweight='bold')
+    plt.savefig('generated_images/business_segments.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('Generated: business_segments.png')
 
 # 地理区域饼图
-regions = ['North America', 'Europe', 'Asia Pacific', 'Other']
-percentages = [40, 30, 25, 5]
-create_geographic_segments_pie(regions, percentages, '2024')
+def create_geographic_segments_pie(regions, percentages, year):
+    labels = [f'{r}\n{p}%' for r, p in zip(regions, percentages)]
+    colors = ['#1E88E5', '#43A047', '#FB8C00', '#E53935']
+    explode = [0.05 if p == max(percentages) else 0 for p in percentages]
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    ax.pie(percentages, explode=explode, labels=labels, colors=colors,
+           autopct='%1.1f%%', startangle=90)
+    ax.set_title(f'Geographic Revenue ({year})', fontsize=14, fontweight='bold')
+    plt.savefig('generated_images/geographic_segments.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('Generated: geographic_segments.png')
 
 # 成本结构饼图
-cost_categories = ['COGS', 'R&D', 'SG&A', 'Other']
-percentages = [50, 15, 25, 10]
-create_cost_structure_pie(cost_categories, percentages, '2024')
+def create_cost_structure_pie(categories, percentages, year):
+    labels = [f'{c}\n{p}%' for c, p in zip(categories, percentages)]
+    colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A']
 
-# 收入趋势线图
-years = ['2020', '2021', '2022', '2023', '2024']
-revenues = [100, 110, 125, 140, 155]
-create_revenue_trend_line(years, revenues, 'Company Name')
+    fig, ax = plt.subplots(figsize=(10, 8))
+    ax.pie(percentages, labels=labels, colors=colors,
+           autopct='%1.1f%%', startangle=90)
+    ax.set_title(f'Cost Structure ({year})', fontsize=14, fontweight='bold')
+    plt.savefig('generated_images/cost_structure.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('Generated: cost_structure.png')
 
-# 债务权益柱状图
-debt = [30, 35, 32, 28, 25]
-equity = [70, 75, 80, 85, 90]
-create_debt_equity_bar(years, debt, equity, 'Company Name')
+# 调用函数生成图表（使用从年报中提取的实际数据）
+if __name__ == '__main__':
+    year = '2024'  # 从数据中提取
+
+    # 业务板块 - 替换为实际数据
+    segments = ['Accommodation', 'Transportation', 'Tourism', 'Corporate', 'Other']
+    percentages = [44.4, 41.7, 8.0, 5.0, 0.9]
+    create_business_segments_pie(segments, percentages, year)
+
+    # 地理区域 - 替换为实际数据
+    regions = ['China Domestic', 'International']
+    percentages = [80.6, 19.4]
+    create_geographic_segments_pie(regions, percentages, year)
+
+    # 成本结构 - 替换为实际数据
+    categories = ['COGS', 'S&M', 'R&D', 'G&A']
+    percentages = [20.5, 24.5, 8.4, 6.6]
+    create_cost_structure_pie(categories, percentages, year)
 ```
 
-**插入图表到报告**：
-```markdown
-![业务板块收入构成](generated_images/business_segments.png)
-![地理区域收入构成](generated_images/geographic_segments.png)
-![成本构成](generated_images/cost_structure.png)
-```
+**执行步骤**：
 
-**重要：图片文件名规范**
-所有图片文件名由 `scripts/__init__.py` 中的常量定义，确保一致性：
+1. 将上述脚本保存到当前目录（替换为从年报提取的实际数据）
+2. 使用Bash工具执行：
+   ```bash
+   python generate_seg_charts.py
+   ```
+3. 验证图表已生成：
+   ```bash
+   ls generated_images/
+   ```
+4. 在报告中引用图片：
+   ```markdown
+   ![业务板块收入构成](generated_images/business_segments.png)
+   ![地理区域收入构成](generated_images/geographic_segments.png)
+   ![成本构成](generated_images/cost_structure.png)
+   ```
+
+**图片文件名规范**：
 - `business_segments.png` - 业务板块饼图
 - `geographic_segments.png` - 地理区域饼图
 - `cost_structure.png` - 成本结构饼图
 
 **不要使用 `_pie` 后缀**，直接使用上述文件名。
+
+**验证清单**：
+```
+□ Python脚本已创建并执行
+□ generated_images/目录已创建
+□ 所有3张图表已生成
+□ 报告中已正确引用所有图片
+```
 
 ### 5. 代码执行
 

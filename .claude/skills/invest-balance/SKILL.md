@@ -165,65 +165,145 @@ description: Generate comprehensive balance sheet research reports in markdown f
 列出所有来源及权威性评估
 ```
 
-### 3. 图表生成（最多 10 个图表）
+### 3. 图表生成（强制执行）
 
-**图表生成规范：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
+⚠️ **重要**：在完成报告时，**必须**执行以下步骤来生成图表：
+
+1. **创建图表生成脚本**：在当前目录创建Python脚本
+2. **执行脚本生成图表**：使用Bash工具运行Python脚本
+3. **验证图表文件**：检查 `generated_images/` 目录是否包含生成的图片
+4. **在报告中引用图片**：使用markdown语法引用图表
 
 **必需图表：**
 
-**图表 4：资产构成（饼图）**
-- 使用 `scripts/asset_composition.py`
+**图表 1：资产构成（饼图）**
 - 文件名：`asset_composition.png`
-- 英文标签（如 "Current Assets", "Non-Current Assets"）
+- 英文标签（如 "Cash & Investments", "Long-term Investments", "Goodwill", "Other"）
 - 使用实际数据的年份
 
-**图表 5：负债构成（饼图）**
-- 使用 `scripts/liability_composition.py`
+**图表 2：负债构成（饼图）**
 - 文件名：`liability_composition.png`
-- 英文标签（如 "Current Liabilities", "Long-term Debt"）
+- 英文标签（如 "Short-term Debt", "Long-term Debt", "Other Liabilities"）
 - 使用实际数据的年份
 
-**图表 8：长期债务趋势（折线图）**
-- 使用 `scripts/debt_trend.py`
+**图表 3：债务趋势（折线图或柱状图）**
 - 文件名：`debt_trend.png`
-- 棕色线条（#795548），16:9 宽高比（12x6）
-- 从数据范围中提取实际年份（如 2019-2024）
-- 年份列表长度必须与数据值长度匹配
+- 显示短期债务、长期债务、现金储备的多年趋势
+- 从数据范围中提取实际年份（如 2020-2024）
 
-**可选附加图表**（最多 7 个）：
-- 流动比率趋势
-- 速动比率趋势
-- 债务权益比
-- 资产质量指标
-- 现金流与债务义务对比
-- 营运资本分析
-- **流动性指标综合对比**（推荐：包含流动比率、速动比率、现金比率的多指标图表）
+**创建图表生成脚本模板：**
+
+```python
+#!/usr/bin/env python3
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+os.makedirs('generated_images', exist_ok=True)
+
+# 图表1：资产构成饼图
+def create_asset_composition():
+    labels = ['Cash & Short-term\nInvestments', 'Long-term\nInvestments',
+              'Goodwill', 'Other Assets']
+    sizes = [31.7, 19.5, 25.1, 23.7]  # 替换为实际数据
+    colors = ['#1E88E5', '#43A047', '#FB8C00', '#8E24AA']
+    explode = (0.05, 0, 0, 0)
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    ax.pie(sizes, explode=explode, labels=labels, colors=colors,
+           autopct='%1.1f%%', startangle=90)
+    ax.set_title('Asset Composition (2024)', fontsize=14, fontweight='bold')
+    plt.savefig('generated_images/asset_composition.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('Generated: asset_composition.png')
+
+# 图表2：负债构成饼图
+def create_liability_composition():
+    labels = ['Short-term Debt', 'Long-term Debt', 'Other Liabilities']
+    sizes = [19.6, 21.6, 58.8]  # 替换为实际数据
+    colors = ['#E53935', '#FB8C00', '#757575']
+    explode = (0.05, 0.05, 0)
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    ax.pie(sizes, explode=explode, labels=labels, colors=colors,
+           autopct='%1.1f%%', startangle=90)
+    ax.set_title('Liability Composition (2024)', fontsize=14, fontweight='bold')
+    plt.savefig('generated_images/liability_composition.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('Generated: liability_composition.png')
+
+# 图表3：债务与现金趋势
+def create_debt_trend():
+    years = ['2020', '2021', '2022', '2023', '2024']  # 替换为实际年份
+    short_term_debt = [27.14, 39.38, 28.47, 22.16, 19.42]  # 替换为实际数据
+    long_term_debt = [22.72, 11.09, 13.18, 19.10, 20.13]  # 替换为实际数据
+    cash = [42.92, 49.38, 42.55, 59.34, 76.91]  # 替换为实际数据
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    x = np.arange(len(years))
+    width = 0.25
+
+    ax.bar(x - width, short_term_debt, width, label='Short-term Debt', color='#E53935')
+    ax.bar(x, long_term_debt, width, label='Long-term Debt', color='#FB8C00')
+    ax.plot(x + width*0.5, cash, marker='o', linewidth=2.5, label='Cash',
+            color='#43A047', markersize=8)
+
+    ax.set_xlabel('Year', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Amount (Billion CNY)', fontsize=12, fontweight='bold')
+    ax.set_title('Debt and Cash Trend (2020-2024)', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(years)
+    ax.legend()
+    ax.grid(axis='y', alpha=0.3)
+
+    plt.savefig('generated_images/debt_trend.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('Generated: debt_trend.png')
+
+if __name__ == '__main__':
+    create_asset_composition()
+    create_liability_composition()
+    create_debt_trend()
+```
+
+**执行步骤：**
+
+1. 将上述脚本保存到当前目录（替换为从年报提取的实际数据）
+2. 使用Bash工具执行：
+   ```bash
+   python generate_balance_charts.py
+   ```
+3. 验证图表已生成：
+   ```bash
+   ls generated_images/
+   ```
+4. 在报告中引用图片：
+   ```markdown
+   ![资产构成](generated_images/asset_composition.png)
+   ![负债构成](generated_images/liability_composition.png)
+   ![债务与现金趋势](generated_images/debt_trend.png)
+   ```
+
+**验证清单：**
+```
+□ Python脚本已创建并执行
+□ generated_images/目录已创建
+□ 所有3张图表已生成
+□ 报告中已正确引用所有图片
+```
 
 ### 4. 图表实现
 
-**使用方式：**
-
-```python
-# 资产构成饼图
-from scripts.asset_composition import generate_asset_composition_chart
-asset_data = {'Current Assets': 35, 'Non-Current Assets': 65}
-generate_asset_composition_chart(asset_data, '2024')
-
-# 负债构成饼图
-from scripts.liability_composition import generate_liability_composition_chart
-liability_data = {'Current Liabilities': 25, 'Long-term Debt': 50, 'Other': 25}
-generate_liability_composition_chart(liability_data, '2024')
-
-# 长期债务趋势折线图
-from scripts.debt_trend import generate_debt_trend_chart
-years = ['2019', '2020', '2021', '2022', '2023', '2024']
-debt_values = [100.5, 110.2, 105.8, 120.3, 115.7, 130.1]
-generate_debt_trend_chart(years, debt_values)
-```
-
 **在 markdown 中插入图表：**
 ```markdown
+### 资产构成分析（2024年）
+
 ![资产构成](generated_images/asset_composition.png)
+
+**资产特点**：
+- 现金储备充裕...
+- 长期投资布局...
 ```
 
 ### 5. 计算验证与合理性检查 ⚠️ 强制执行

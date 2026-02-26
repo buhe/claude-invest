@@ -132,35 +132,140 @@ description: 在包含公司年报和参考资料（markdown）的当前目录�
 
 **数据验证要求：** 详见 `invest-report/references/common-guidelines.md`（数据验证规范）。
 
-### 步骤 4：生成图表
+### 步骤 4：生成图表（强制执行）
 
-使用绑定的 `scripts/chart_generator.py`：
+⚠️ **重要**：在完成报告时，**必须**执行以下步骤来生成图表：
+
+1. **创建图表生成脚本**：在当前目录创建Python脚本
+2. **执行脚本生成图表**：使用Bash工具运行Python脚本
+3. **验证图表文件**：检查 `generated_images/` 目录是否包含生成的图片
+4. **在报告中引用图片**：使用markdown语法引用图表
+
+**必需图表：**
+- **股息增长图** (`dividend_growth.png`)
+- **股数趋势图** (`share_count_trend.png`)
+- **资本配置分解图** (`capital_allocation_breakdown.png`)
+
+**创建图表生成脚本模板：**
 
 ```python
-from scripts.chart_generator import ChartGenerator
-
-# 重要：明确指定输出目录为当前工作目录下的 generated_images
+#!/usr/bin/env python3
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
 import os
-output_dir = os.path.join(os.getcwd(), "generated_images")
-generator = ChartGenerator(output_dir=output_dir)
+os.makedirs('generated_images', exist_ok=True)
 
-# 图表 6：股数趋势
-generator.share_count_trend(years, share_counts)
+# 从实际数据中提取
+years = ['2020', '2021', '2022', '2023', '2024']  # 替换为实际数据
+dividends = [0, 0, 0, 0, 0.28]  # 替换为实际每股股利（美元）
+share_counts = [635, 642, 650, 655, 660]  # 替换为实际股数（百万股）
+repurchases = [0, 0, 0, 16.17, 21.72]  # 替换为实际回购金额（亿元）
 
-# 图表 7：股息增长
-generator.dividend_growth(years, dividends)
+# 图表1：股息增长
+def create_dividend_growth():
+    fig, ax = plt.subplots(figsize=(12, 6))
+    bars = ax.bar(years, dividends, color='#43A047', edgecolor='white', linewidth=1.5)
 
-# 图表 10：资本配置分解
-generator.capital_allocation_breakdown(years, dividends, repurchases)
+    ax.set_ylabel('Dividend Per Share (USD)', fontsize=12, fontweight='bold')
+    ax.set_xlabel('Year', fontsize=12, fontweight='bold')
+    ax.set_title('Dividend Growth Trend', fontsize=14, fontweight='bold')
+    ax.grid(axis='y', alpha=0.3)
+
+    for bar, val in zip(bars, dividends):
+        if val > 0:
+            height = bar.get_height()
+            ax.annotate(f'${val:.2f}', xy=(bar.get_x() + bar.get_width() / 2, height),
+                       xytext=(0, 5), textcoords="offset points", ha='center',
+                       fontsize=10, fontweight='bold')
+
+    plt.tight_layout()
+    plt.savefig('generated_images/dividend_growth.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('[OK] dividend_growth.png')
+
+# 图表2：股数趋势
+def create_share_count_trend():
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(years, share_counts, marker='o', linewidth=2.5, markersize=8, color='#1E88E5')
+    ax.fill_between(years, share_counts, alpha=0.3, color='#1E88E5')
+
+    ax.set_ylabel('Share Count (Millions)', fontsize=12, fontweight='bold')
+    ax.set_xlabel('Year', fontsize=12, fontweight='bold')
+    ax.set_title('Share Count Trend', fontsize=14, fontweight='bold')
+    ax.grid(axis='y', alpha=0.3)
+
+    for i, (x, y) in enumerate(zip(years, share_counts)):
+        ax.annotate(f'{y:.0f}M', xy=(i, y), xytext=(0, 10),
+                   textcoords="offset points", ha='center', fontsize=10, fontweight='bold')
+
+    plt.tight_layout()
+    plt.savefig('generated_images/share_count_trend.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('[OK] share_count_trend.png')
+
+# 图表3：资本配置分解
+def create_capital_allocation():
+    categories = ['R&D\n131.39亿', 'S&M\n159.88亿', 'G&A\n95.40亿',
+                  'Capex\n5.91亿', 'Div+Buyback\n25.22亿', 'Cash Add\n365.92亿']
+    amounts = [131.39, 159.88, 95.40, 5.91, 25.22, 365.92]  # 替换为实际数据（亿元）
+    colors = ['#1E88E5', '#43A047', '#FB8C00', '#9C27B0', '#E91E63', '#607D8B']
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    y_pos = np.arange(len(categories))
+    bars = ax.barh(y_pos, amounts, color=colors, edgecolor='white', linewidth=1.5)
+
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(categories, fontsize=11)
+    ax.invert_yaxis()
+    ax.set_xlabel('Amount (Billion CNY)', fontsize=12, fontweight='bold')
+    ax.set_title('Capital Allocation Breakdown (2024)', fontsize=14, fontweight='bold')
+    ax.grid(axis='x', alpha=0.3)
+
+    for i, (bar, val) in enumerate(zip(bars, amounts)):
+        width = bar.get_width()
+        ax.annotate(f'{val:.1f}亿', xy=(width, bar.get_y() + bar.get_height() / 2),
+                   xytext=(5, 0), textcoords="offset points", ha='left', va='center',
+                   fontsize=10, fontweight='bold')
+
+    plt.tight_layout()
+    plt.savefig('generated_images/capital_allocation_breakdown.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('[OK] capital_allocation_breakdown.png')
+
+if __name__ == '__main__':
+    create_dividend_growth()
+    create_share_count_trend()
+    create_capital_allocation()
+    print('\nAll charts generated successfully!')
 ```
 
-**⚠️ 路径重要说明**：
-- **必须**明确使用 `os.getcwd()` 获取当前工作目录
-- 图片必须保存在**当前工作目录**的 `generated_images/` 下
-- 不要在 skill 目录或任何其他位置生成图片
-- 在 markdown 报告中引用图片时使用相对路径：`![描述](generated_images/图片名.png)`
+**执行步骤：**
 
-**图表要求：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
+1. 将上述脚本保存到当前目录（替换为从年报提取的实际数据）
+2. 使用Bash工具执行：
+   ```bash
+   python generate_cap_charts.py
+   ```
+3. 验证图表已生成：
+   ```bash
+   ls generated_images/
+   ```
+4. 在报告中引用图片：
+   ```markdown
+   ![股息增长](generated_images/dividend_growth.png)
+   ![股数趋势](generated_images/share_count_trend.png)
+   ![资本配置分解](generated_images/capital_allocation_breakdown.png)
+   ```
+
+**验证清单：**
+```
+□ Python脚本已创建并执行
+□ generated_images/目录已创建
+□ 所有3张图表已生成
+□ 报告中已正确引用所有图片
+```
 
 ### 步骤 5：撰写报告
 

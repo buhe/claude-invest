@@ -89,10 +89,48 @@ description: 在当前文件夹生成对应公司的投资研究报告，markdow
 7. 综合评估与投资建议（汇总各模块分析）
 8. 数据来源与免责声明
 
-**图表引用：**
-- 图片规范详见 `references/common-guidelines.md`
-- 读取各代理生成的报告文件，提取其中引用的图片路径
-- 在汇总报告的相应章节插入对应的图片引用：`![图表描述](generated_images/图表文件名.png)`
+**⚠️ 图表引用提取与插入（强制执行）：**
+
+在生成最终报告时，**必须**执行以下步骤：
+
+1. **读取各代理报告，提取图片引用**
+   ```bash
+   # 查找所有报告中的图片引用
+   grep -h "!\[" *_报告*.md | sort -u
+   ```
+
+2. **验证图片文件存在**
+   ```bash
+   # 检查所有引用的图片文件是否存在
+   ls generated_images/*.png
+   ```
+
+3. **在最终报告中插入图片引用**
+   - 按照章节结构，在相应位置插入图片引用
+   - 图片引用格式：`![图表描述](generated_images/图表文件名.png)`
+
+**各章节应包含的图表：**
+
+| 章节 | 应包含的图表 | 文件名 |
+|------|------------|--------|
+| 业务构成与成本结构 | 业务板块饼图、地理区域饼图、成本结构饼图 | business_segments.png, geographic_segments.png, cost_structure.png |
+| 资产负债表分析 | 资产构成饼图、负债构成饼图、债务趋势图 | asset_composition.png, liability_composition.png, debt_trend.png |
+| 企业估值分析 | 收入趋势图、净利润趋势图、自由现金流趋势图 | revenue_trend.png, net_income_trend.png, fcf_trend.png |
+| 资本配置分析 | 资本配置分解图、股息增长图、股数趋势图 | capital_allocation_breakdown.png, dividend_growth.png, share_count_trend.png |
+
+**图表插入示例：**
+```markdown
+## 一、业务构成与成本结构分析
+
+### 业务板块分析
+
+| 业务板块 | 收入（亿元） | 占比 |
+|---------|------------|------|
+| 住宿预订 | 213.18 | 40% |
+| 交通票务 | 186.53 | 35% |
+
+![业务板块收入构成](generated_images/business_segments.png)
+```
 
 **综合评估要求：**
 - 优势：汇总各模块分析中发现的正面因素

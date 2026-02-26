@@ -142,34 +142,107 @@ description: 在当前文件夹生成对应公司的投资入股、收购、并�
 
 **数据验证要求：** 详见 `invest-report/references/common-guidelines.md`（数据验证规范）。
 
-### 步骤 4：生成可视化图表
+### 步骤 4：生成可视化图表（强制执行）
 
-使用绑定的 `scripts/chart_generator.py` 生成相关图表：
+⚠️ **重要**：在完成报告时，**必须**执行以下步骤来生成图表：
+
+1. **创建图表生成脚本**：在当前目录创建Python脚本
+2. **执行脚本生成图表**：使用Bash工具运行Python脚本
+3. **验证图表文件**：检查 `generated_images/` 目录是否包含生成的图片
+4. **在报告中引用图片**：使用markdown语法引用图表
+
+**推荐图表：**
+- **投资规模趋势图** (`investment_trend.png`)
+- **投资类型分解图** (`investment_type_breakdown.png`)
+
+**创建图表生成脚本模板：**
 
 ```python
-from scripts.chart_generator import ChartGenerator
+#!/usr/bin/env python3
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
 import os
+os.makedirs('generated_images', exist_ok=True)
 
-# 重要：明确指定输出目录为当前工作目录下的 generated_images
-output_dir = os.path.join(os.getcwd(), "generated_images")
-generator = ChartGenerator(output_dir=output_dir)
+# 从实际数据中提取
+years = ['2020', '2021', '2022', '2023', '2024']  # 替换为实际数据
+investments = [18.5, 25.3, 32.1, 28.7, 35.6]  # 替换为实际投资总额（亿元）
 
-# 图表：投资规模趋势（使用 revenue_trend 方法适配）
-generator.investment_trend(
-    years=['2020', '2021', '2022', '2023', '2024'],
-    investments=[500, 650, 800, 750, 900],
-    title="Investment Scale Trend (Last 5 Years)"
-)
+# 图表1：投资规模趋势
+def create_investment_trend():
+    fig, ax = plt.subplots(figsize=(12, 6))
+    bars = ax.bar(years, investments, color='#1E88E5', edgecolor='white', linewidth=1.5)
 
-# 图表：投资类型分解（使用 revenue_segment_breakdown 方法适配）
-generator.investment_type_breakdown(
-    types=['Minority Stake', 'Acquisition', 'JV', 'Other'],
-    values=[200, 500, 150, 50],
-    title="Investment by Type"
-)
+    ax.set_ylabel('Investment Amount (Billion CNY)', fontsize=12, fontweight='bold')
+    ax.set_xlabel('Year', fontsize=12, fontweight='bold')
+    ax.set_title('Investment Scale Trend (Last 5 Years)', fontsize=14, fontweight='bold')
+    ax.grid(axis='y', alpha=0.3)
+
+    for bar, val in zip(bars, investments):
+        height = bar.get_height()
+        ax.annotate(f'{val:.1f}亿', xy=(bar.get_x() + bar.get_width() / 2, height),
+                   xytext=(0, 5), textcoords="offset points", ha='center',
+                   fontsize=10, fontweight='bold')
+
+    plt.tight_layout()
+    plt.savefig('generated_images/investment_trend.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('[OK] investment_trend.png')
+
+# 图表2：投资类型分解
+def create_investment_type_breakdown():
+    types = ['Minority\nStake', 'Acquisition', 'Joint\nVenture', 'Financial\nInvestment']
+    values = [20, 50, 15, 10]  # 替换为实际数据（亿元）
+    colors = ['#1E88E5', '#43A047', '#FB8C00', '#9C27B0']
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    wedges, texts, autotexts = ax.pie(values, labels=types, colors=colors,
+                                       autopct='%1.1f%%', startangle=90,
+                                       pctdistance=0.85)
+    for autotext in autotexts:
+        autotext.set_color('white')
+        autotext.set_fontsize(11)
+        autotext.set_fontweight('bold')
+
+    ax.set_title('Investment by Type', fontsize=14, fontweight='bold', pad=20)
+
+    plt.tight_layout()
+    plt.savefig('generated_images/investment_type_breakdown.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print('[OK] investment_type_breakdown.png')
+
+if __name__ == '__main__':
+    create_investment_trend()
+    create_investment_type_breakdown()
+    print('\nAll charts generated successfully!')
 ```
 
-**图表要求：** 详见 `invest-report/references/common-guidelines.md`（图表生成通用规范）。
+**执行步骤：**
+
+1. 将上述脚本保存到当前目录（替换为从年报提取的实际数据）
+2. 使用Bash工具执行：
+   ```bash
+   python generate_acq_charts.py
+   ```
+3. 验证图表已生成：
+   ```bash
+   ls generated_images/
+   ```
+4. 在报告中引用图片：
+   ```markdown
+   ![投资规模趋势](generated_images/investment_trend.png)
+   ![投资类型分解](generated_images/investment_type_breakdown.png)
+   ```
+
+**验证清单：**
+```
+□ Python脚本已创建并执行
+□ generated_images/目录已创建
+□ 所有图表已生成
+□ 报告中已正确引用所有图片
+```
 
 ### 步骤 5：撰写报告
 
