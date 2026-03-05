@@ -20,7 +20,7 @@ import time
 from datetime import datetime
 
 headers = {
-    "User-Agent": "bear bugu1986@gmail.com"
+    "User-Agent": "invest 81128054@qq.com"
 }
 
 
