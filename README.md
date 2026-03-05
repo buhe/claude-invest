@@ -48,6 +48,7 @@ agent-browser install
 ## Usage
 
 Research Apple and generate an investment report
+
 Claude Code prompt:「研究苹果公司，生成一份中文投资报告」
 
 ### Output
