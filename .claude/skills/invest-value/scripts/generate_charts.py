@@ -4,6 +4,8 @@ Generate financial charts for valuation reports.
 All chart labels, titles, and text are in ENGLISH.
 """
 
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend to avoid GUI window on Windows
 import matplotlib.pyplot as plt
 import os
 from pathlib import Path

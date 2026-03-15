@@ -5,6 +5,8 @@ Generates professional financial charts for investment research reports using ma
 All charts use English labels and titles, saved at 300 DPI to generated_images/ directory.
 """
 
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend to avoid GUI window on Windows
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path

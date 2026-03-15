@@ -10,6 +10,8 @@ All charts must:
 - Display data labels for clarity
 """
 
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend to avoid GUI window on Windows
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import os

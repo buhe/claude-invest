@@ -4,6 +4,8 @@ Asset Composition Pie Chart Generator
 Creates a pie chart showing various asset types composition
 """
 
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend to avoid GUI window on Windows
 import matplotlib.pyplot as plt
 import os
 from . import CHART_ASSET_COMPOSITION

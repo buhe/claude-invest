@@ -4,6 +4,8 @@ Long-term Debt Trend Line Chart Generator
 Creates a line chart showing long-term debt trend over years
 """
 
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend to avoid GUI window on Windows
 import matplotlib.pyplot as plt
 import os
 from . import CHART_DEBT_TREND
