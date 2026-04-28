@@ -1,0 +1,17 @@
+{
+  "embedding_model": "BAAI/bge-large-zh-v1.5",
+  "vector_dimension": 1024,
+  "distance_metric": "cosine",
+  "chunk_overlap": 50,
+  "top_k_retrieval": 5,
+  "hybrid_search": {
+    "enabled": true,
+    "bm25_weight": 0.3,
+    "vector_weight": 0.7
+  },
+  "rerank_model": "BAAI/bge-reranker-large",
+  "rerank_top_n": 3,
+  "slice_format": "jsonl",
+  "metadata_fields": ["book", "chapter", "section", "slice_id", "word_count", "tags"],
+  "note": "《价值投资实战手册》切片 611 条，港股差异 8 条，共 619 条。规则库 22 条独立 JSON 文件。"
+}
